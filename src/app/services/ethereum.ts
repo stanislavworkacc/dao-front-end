@@ -80,7 +80,6 @@ export class EthereumService {
     }
 
     private getNetworkName(chainId: number): string {
-        debugger;
         switch (chainId) {
             case 1:
                 return 'Ethereum Mainnet';
