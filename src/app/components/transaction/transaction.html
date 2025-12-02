@@ -43,8 +43,17 @@
                             [disabled]="!canSendTransaction"
                             (onClick)="sendTransaction()"
                             styleClass="send-btn"
-                    >
-                    </p-button>
+                    ></p-button>
+
+                    <p-button
+                            label="Send SBEL TOKEN"
+                            icon="pi pi-send"
+                            severity="success"
+                            [loading]="isSending()"
+                            [disabled]="!canSendTransaction"
+                            (onClick)="sendErc20Transaction()"
+                            styleClass="send-btn"
+                    ></p-button>
                 </div>
             </div>
 

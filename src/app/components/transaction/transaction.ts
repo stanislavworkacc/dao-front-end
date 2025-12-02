@@ -16,6 +16,7 @@ import {ProgressSpinnerModule} from 'primeng/progressspinner';
 import {ChipModule} from 'primeng/chip';
 import {EthereumService} from '../../services/ethereum';
 import {DividerModule} from 'primeng/divider';
+import {Erh20Service} from "../../services/erh-20.service";
 
 @Component({
     selector: 'app-transaction',
@@ -38,6 +39,7 @@ import {DividerModule} from 'primeng/divider';
 })
 export class Transaction {
     private readonly _ethereumService: EthereumService = inject(EthereumService);
+    private readonly _erh20Service: Erh20Service = inject(Erh20Service);
 
     toAddress = '';
     amount: number | null = null;
@@ -107,7 +109,7 @@ export class Transaction {
         this.message.set('');
 
         try {
-            const hash: string = await this._ethereumService.sendTransaction(this.toAddress.trim(), this.amount!.toString());
+            const hash: string = await this._ethereumService.sendEthTransaction(this.toAddress.trim(), this.amount!.toString());
 
             this.lastTransaction.set(hash);
             this.showMessage('Transaction sent successfully!', 'success');
@@ -117,6 +119,39 @@ export class Transaction {
             this.amount = null;
         } catch (error) {
             this.showMessage('Transaction failed: ' + (error as Error).message, 'error');
+        } finally {
+            this.isSending.set(false);
+        }
+    }
+
+    async sendErc20Transaction(): Promise<void> {
+        this.validateAddress();
+        this.validateAmount();
+
+        if (this.addressError || this.amountError) {
+            return;
+        }
+
+        this.isSending.set(true);
+        this.message.set('');
+
+        try {
+            const hash: string = await this._erh20Service.sendErc20Token(
+                this.toAddress.trim(),
+                this.amount!.toString(),
+                6
+            );
+
+            this.lastTransaction.set(hash);
+            this.showMessage('SBEL tokens sent successfully!', 'success');
+
+            this.toAddress = '';
+            this.amount = null;
+        } catch (error) {
+            this.showMessage(
+                'Transaction failed: ' + (error as Error).message,
+                'error'
+            );
         } finally {
             this.isSending.set(false);
         }

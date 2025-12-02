@@ -157,7 +157,7 @@ export class EthereumService {
         }
     }
 
-    async sendTransaction(to: string, amount: string): Promise<string> {
+    async sendEthTransaction(to: string, amount: string): Promise<string> {
         if (!this.signer) {
             throw new Error('Wallet not connected');
         }
@@ -176,6 +176,8 @@ export class EthereumService {
             throw error;
         }
     }
+
+
 
     async getContract(
         contractAddress: string,
