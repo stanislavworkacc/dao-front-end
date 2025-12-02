@@ -20,6 +20,7 @@ import {tap} from 'rxjs';
 import {HoodiNetworkService} from "../../services/hoodi-network.service";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {FormatAddressPipe} from "./format-address.pipe";
+import {WalletService} from "../../services/wallet.service";
 
 @Component({
     selector: 'app-wallet',
@@ -40,11 +41,12 @@ import {FormatAddressPipe} from "./format-address.pipe";
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Wallet implements OnInit {
+    private readonly _walletService: WalletService = inject(WalletService);
     private readonly _destroyRef: DestroyRef = inject(DestroyRef);
     private readonly _ethereumService: EthereumService = inject(EthereumService);
     private readonly _hoodiNetworkService: HoodiNetworkService = inject(HoodiNetworkService);
 
-    walletInfo: WritableSignal<WalletInfo | null> = signal(null);
+    walletInfo: WritableSignal<WalletInfo | null> = this._walletService.walletInfo;
     message = '';
     messageType: 'success' | 'error' = 'success';
 

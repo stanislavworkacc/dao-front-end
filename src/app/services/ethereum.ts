@@ -1,6 +1,7 @@
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {ethers, Network} from 'ethers';
 import {BehaviorSubject, Observable} from 'rxjs';
+import {WalletService} from "./wallet.service";
 
 export interface WalletInfo {
     address: string;
@@ -13,6 +14,8 @@ export interface WalletInfo {
     providedIn: 'root',
 })
 export class EthereumService {
+    private readonly _walletService: WalletService = inject(WalletService);
+
     private provider: ethers.BrowserProvider | null = null;
     private signer: ethers.JsonRpcSigner | null = null;
 
@@ -63,18 +66,26 @@ export class EthereumService {
         if (!window.ethereum) return;
 
         window.ethereum.on('chainChanged', async (_chainId: string) => {
-            this.provider = new ethers.BrowserProvider(window.ethereum);
-            this.signer = await this.provider.getSigner();
-            await this.updateWalletInfo();
-        });
+            const isWallet: boolean = !!this._walletService.walletInfo();
 
-        window.ethereum.on('accountsChanged', async (accounts: string[]) => {
-            if (!accounts.length) {
-                await this.disconnectWallet();
-            } else {
+            if(isWallet) {
                 this.provider = new ethers.BrowserProvider(window.ethereum);
                 this.signer = await this.provider.getSigner();
                 await this.updateWalletInfo();
+            }
+        });
+
+        window.ethereum.on('accountsChanged', async (accounts: string[]) => {
+            const isWallet: boolean = !!this._walletService.walletInfo();
+
+            if(isWallet) {
+                if (!accounts.length) {
+                    await this.disconnectWallet();
+                } else {
+                    this.provider = new ethers.BrowserProvider(window.ethereum);
+                    this.signer = await this.provider.getSigner();
+                    await this.updateWalletInfo();
+                }
             }
         });
 
