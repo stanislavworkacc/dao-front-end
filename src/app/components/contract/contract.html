@@ -1,7 +1,7 @@
 <div class="contract-container">
     <p-card header="Smart Contract Interaction" styleClass="contract-card">
         <div class="contract-content">
-            @if (!isConnected) {
+            @if (!isConnected()) {
                 <div class="not-connected">
                     <div class="connection-message">
                         <i class="pi pi-wallet"></i>

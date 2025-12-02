@@ -1,4 +1,13 @@
-import {Component, OnInit, OnDestroy, ChangeDetectionStrategy} from '@angular/core';
+import {
+    Component,
+    OnInit,
+    OnDestroy,
+    ChangeDetectionStrategy,
+    inject,
+    DestroyRef,
+    WritableSignal,
+    signal
+} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {ButtonModule} from 'primeng/button';
@@ -10,9 +19,10 @@ import {ProgressSpinnerModule} from 'primeng/progressspinner';
 import {DataViewModule} from 'primeng/dataview';
 import {DividerModule} from 'primeng/divider';
 import {TagModule} from 'primeng/tag';
-import {EthereumService} from '../../services/ethereum';
-import {Subscription} from 'rxjs';
+import {EthereumService, WalletInfo} from '../../services/ethereum';
+import {Subscription, tap} from 'rxjs';
 import {ethers} from 'ethers';
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 // ERC-20 Token ABI (minimal)
 const ERC20_ABI = [
@@ -40,11 +50,14 @@ const ERC20_ABI = [
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Contract implements OnInit, OnDestroy {
+    private readonly _ethereumService: EthereumService = inject(EthereumService);
+    private readonly _destroyRef: DestroyRef = inject(DestroyRef);
+
     contractAddress = '0x6645CAe3a4D955d83bDC0dCC746a2fbb4d7E71c1';
     contractAddressError = '';
     contractInfo: any = null;
     isLoading = false;
-    isConnected = false;
+    isConnected: WritableSignal<boolean> = signal(false)
 
     // Transfer form
     transferRecipient = '';
@@ -58,15 +71,13 @@ export class Contract implements OnInit, OnDestroy {
 
     private subscription: Subscription = new Subscription();
 
-    constructor(private ethereumService: EthereumService) {
-    }
-
     ngOnInit(): void {
-        this.subscription.add(
-            this.ethereumService.walletInfo$.subscribe((info) => {
-                this.isConnected = info !== null;
+        this._ethereumService.walletInfo$.pipe(
+            takeUntilDestroyed(this._destroyRef),
+            tap((info: WalletInfo) => {
+                this.isConnected.set(!!info);
             })
-        );
+        ).subscribe()
     }
 
     ngOnDestroy(): void {
@@ -101,7 +112,7 @@ export class Contract implements OnInit, OnDestroy {
         this.contractInfo = null;
 
         try {
-            const contract = await this.ethereumService.getContract(
+            const contract = await this._ethereumService.getContract(
                 this.contractAddress,
                 ERC20_ABI
             );
@@ -109,7 +120,7 @@ export class Contract implements OnInit, OnDestroy {
             const [GOVERNANCE_TOKEN] = await Promise.all([
                 contract['GOVERNANCE_TOKEN'],
                 (
-                    await this.ethereumService.getSigner()!.getAddress()
+                    await this._ethereumService.getSigner()!.getAddress()
                 ),
             ]);
 
@@ -175,10 +186,7 @@ export class Contract implements OnInit, OnDestroy {
         this.transferSuccess = false;
 
         try {
-            const contract = await this.ethereumService.getContract(
-                this.contractAddress,
-                ERC20_ABI
-            );
+            const contract = await this._ethereumService.getContract(this.contractAddress, ERC20_ABI);
 
             const decimals = await contract['decimals']();
             const amount = ethers.parseUnits(
