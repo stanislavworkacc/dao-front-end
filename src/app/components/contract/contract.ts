@@ -19,11 +19,6 @@ import {TagModule} from 'primeng/tag';
 import {EthereumService} from '../../services/ethereum';
 import {ethers} from 'ethers';
 
-// ERC-20 Token ABI (minimal)
-const ERC20_ABI = [
-    "function GOVERNANCE_TOKEN() view returns (address)",
-];
-
 @Component({
     selector: 'app-contract',
     standalone: true,
@@ -95,7 +90,7 @@ export class Contract {
         try {
             const contract = await this._ethereumService.getContract(
                 this.contractAddress,
-                ERC20_ABI
+                DAO_ABI
             );
 
             const [GOVERNANCE_TOKEN] = await Promise.all([
@@ -107,10 +102,6 @@ export class Contract {
 
             this.contractInfo.set({
                 GOVERNANCE_TOKEN: await GOVERNANCE_TOKEN(),
-                // symbol,
-                // decimals,
-                // totalSupply: ethers.formatUnits(totalSupply, decimals),
-                // balance: ethers.formatUnits(balance, decimals),
             });
         } catch (error: any) {
             this.contractAddressError =
@@ -167,7 +158,7 @@ export class Contract {
         this.transferSuccess = false;
 
         try {
-            const contract = await this._ethereumService.getContract(this.contractAddress, ERC20_ABI);
+            const contract = await this._ethereumService.getContract(this.contractAddress, DAO_ABI);
 
             const decimals = await contract['decimals']();
             const amount = ethers.parseUnits(

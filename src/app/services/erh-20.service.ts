@@ -2,15 +2,7 @@ import {inject, Injectable} from '@angular/core';
 import {EthereumService} from "./ethereum";
 import {ethers} from "ethers";
 import {environment} from "../../environments/environment";
-
-export const ERC20_ABI = [
-    'function name() view returns (string)',
-    'function symbol() view returns (string)',
-    'function decimals() view returns (uint8)',
-    'function balanceOf(address owner) view returns (uint256)',
-    'function transfer(address to, uint256 amount) returns (bool)',
-    'event Transfer(address indexed from, address indexed to, uint256 value)',
-];
+import {ERC20_ABI} from "../abi/erc20.abi";
 
 @Injectable({
   providedIn: 'root'

@@ -168,10 +168,7 @@ export class Transaction {
             this.toAddress = '';
             this.amount = null;
         } catch (error) {
-            this.showMessage(
-                'Transaction failed: ' + (error as Error).message,
-                'error'
-            );
+            this.showMessage('Transaction failed: ' + (error as Error).message, 'error');
         } finally {
             this.isSending.set(false);
         }
