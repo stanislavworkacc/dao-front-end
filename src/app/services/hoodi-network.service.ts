@@ -42,7 +42,7 @@ export class HoodiNetworkService {
                     ],
                 });
             } else {
-                throw e; // інша помилка
+                throw e;
             }
         }
     }

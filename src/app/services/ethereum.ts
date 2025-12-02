@@ -62,10 +62,9 @@ export class EthereumService {
     private initListeners(): void {
         if (typeof window.ethereum === 'undefined') return;
 
-        window.ethereum.on('chainChanged', async () => {
+        window.ethereum.on('chainChanged', async (_chainId: string) => {
             this.provider = new ethers.BrowserProvider(window.ethereum);
             this.signer = await this.provider.getSigner();
-
             await this.updateWalletInfo();
         });
 
@@ -77,6 +76,10 @@ export class EthereumService {
                 this.signer = await this.provider.getSigner();
                 await this.updateWalletInfo();
             }
+        });
+
+        window.ethereum.on('disconnect', async (accounts: string[]) => {
+            await this.disconnectWallet();
         });
     }
 
