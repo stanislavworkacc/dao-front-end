@@ -1,7 +1,5 @@
-import {inject, Injectable} from '@angular/core';
+import {Injectable, signal, WritableSignal} from '@angular/core';
 import {ethers, Network} from 'ethers';
-import {BehaviorSubject, Observable} from 'rxjs';
-import {WalletService} from "./wallet.service";
 
 export interface WalletInfo {
     address: string;
@@ -14,23 +12,46 @@ export interface WalletInfo {
     providedIn: 'root',
 })
 export class EthereumService {
-    private readonly _walletService: WalletService = inject(WalletService);
-
     private provider: ethers.BrowserProvider | null = null;
     private signer: ethers.JsonRpcSigner | null = null;
 
-    private walletInfoSubject = new BehaviorSubject<WalletInfo | null>(null);
-    public walletInfo$ = this.walletInfoSubject.asObservable();
+    public walletInfo: WritableSignal<WalletInfo | null> = signal(null)
 
     constructor() {
         // this.checkWalletConnection();
         this.initListeners();
     }
 
+    get isConnected(): boolean {
+        return this.signer !== null;
+    }
+
+    get getProvider(): ethers.BrowserProvider | null {
+        return this.provider;
+    }
+
+    get getSigner(): ethers.JsonRpcSigner | null {
+        return this.signer;
+    }
+
+    get getCurrentWalletInfo(): WalletInfo | null {
+        return this.walletInfo();
+    }
+
     async connectWallet(): Promise<boolean> {
         try {
             if (!window.ethereum) {
                 throw new Error('MetaMask is not installed');
+            }
+
+            const accounts = await window.ethereum.request({
+                method: "eth_requestAccounts",
+            });
+
+
+            if (!accounts || !accounts.length) {
+                this.walletInfo.set(null);
+                return false;
             }
 
             this.provider = new ethers.BrowserProvider(window.ethereum);
@@ -47,7 +68,7 @@ export class EthereumService {
     async disconnectWallet(): Promise<void> {
         this.provider = null;
         this.signer = null;
-        this.walletInfoSubject.next(null);
+        this.walletInfo.set(null);
     }
 
     async checkWalletConnection(): Promise<void> {
@@ -66,9 +87,9 @@ export class EthereumService {
         if (!window.ethereum) return;
 
         window.ethereum.on('chainChanged', async (_chainId: string) => {
-            const isWallet: boolean = !!this._walletService.walletInfo();
+            const isWallet: boolean = !!this.walletInfo();
 
-            if(isWallet) {
+            if (isWallet) {
                 this.provider = new ethers.BrowserProvider(window.ethereum);
                 this.signer = await this.provider.getSigner();
                 await this.updateWalletInfo();
@@ -76,9 +97,9 @@ export class EthereumService {
         });
 
         window.ethereum.on('accountsChanged', async (accounts: string[]) => {
-            const isWallet: boolean = !!this._walletService.walletInfo();
+            const isWallet: boolean = !!this.walletInfo()
 
-            if(isWallet) {
+            if (isWallet) {
                 if (!accounts.length) {
                     await this.disconnectWallet();
                 } else {
@@ -109,7 +130,7 @@ export class EthereumService {
                 networkName: this.getNetworkName(Number(network.chainId)),
             };
 
-            this.walletInfoSubject.next(walletInfo);
+            this.walletInfo.set(walletInfo);
         } catch (error) {
             console.error('Error updating wallet info:', error);
         }
@@ -182,22 +203,6 @@ export class EthereumService {
 
         const gasPrice = await this.provider.getFeeData();
         return ethers.formatUnits(gasPrice.gasPrice || 0, 'gwei');
-    }
-
-    isConnected(): boolean {
-        return this.signer !== null;
-    }
-
-    getProvider(): ethers.BrowserProvider | null {
-        return this.provider;
-    }
-
-    getSigner(): ethers.JsonRpcSigner | null {
-        return this.signer;
-    }
-
-    getCurrentWalletInfo(): WalletInfo | null {
-        return this.walletInfoSubject.value;
     }
 }
 

@@ -1,9 +1,6 @@
 import {
     Component,
-    OnInit,
-    OnDestroy,
     inject,
-    DestroyRef,
     ChangeDetectionStrategy,
     WritableSignal,
     signal
@@ -17,10 +14,8 @@ import {InputNumberModule} from 'primeng/inputnumber';
 import {MessageModule} from 'primeng/message';
 import {ProgressSpinnerModule} from 'primeng/progressspinner';
 import {ChipModule} from 'primeng/chip';
-import {EthereumService, WalletInfo} from '../../services/ethereum';
-import {Subscription, tap} from 'rxjs';
+import {EthereumService} from '../../services/ethereum';
 import {DividerModule} from 'primeng/divider';
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
     selector: 'app-transaction',
@@ -41,9 +36,8 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
     styleUrls: ['./transaction.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class Transaction implements OnInit {
+export class Transaction {
     private readonly _ethereumService: EthereumService = inject(EthereumService);
-    private readonly _destroyRef: DestroyRef = inject(DestroyRef);
 
     toAddress = '';
     amount: number | null = null;
@@ -62,21 +56,6 @@ export class Transaction implements OnInit {
             !this.addressError &&
             !this.amountError
         );
-    }
-
-    ngOnInit(): void {
-        this.listenWalletChanges();
-    }
-
-    listenWalletChanges() {
-        this._ethereumService.walletInfo$.pipe(
-            takeUntilDestroyed(this._destroyRef),
-            tap((info: WalletInfo) => {
-                if (!info) {
-                    this.loadGasPrice();
-                }
-            })
-        ).subscribe()
     }
 
     async loadGasPrice(): Promise<void> {

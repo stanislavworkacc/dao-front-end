@@ -1,12 +1,10 @@
-import {inject, Injectable} from '@angular/core';
-import {EthereumService, WalletInfo} from "./ethereum";
+import {Injectable} from '@angular/core';
+import {WalletInfo} from "./ethereum";
 
 @Injectable({
   providedIn: 'root'
 })
 export class HoodiNetworkService {
-    private readonly _ethereumService: EthereumService = inject(EthereumService)
-
     isWrongNetwork(info: WalletInfo | null): boolean {
         return !!info && info.chainId !== 560048;
     }

@@ -1,8 +1,6 @@
 import {
     Component,
-    OnInit,
     inject,
-    DestroyRef,
     ChangeDetectionStrategy,
     WritableSignal,
     signal
@@ -16,11 +14,8 @@ import {MessageModule} from 'primeng/message';
 import {ChipModule} from 'primeng/chip';
 import {DividerModule} from 'primeng/divider';
 import {EthereumService, WalletInfo} from '../../services/ethereum';
-import {tap} from 'rxjs';
 import {HoodiNetworkService} from "../../services/hoodi-network.service";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {FormatAddressPipe} from "./format-address.pipe";
-import {WalletService} from "../../services/wallet.service";
+import {FormatAddressPipe} from "../../core/pipes/format-address.pipe";
 
 @Component({
     selector: 'app-wallet',
@@ -40,27 +35,16 @@ import {WalletService} from "../../services/wallet.service";
     styleUrls: ['./wallet.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class Wallet implements OnInit {
-    private readonly _walletService: WalletService = inject(WalletService);
-    private readonly _destroyRef: DestroyRef = inject(DestroyRef);
+export class Wallet {
     private readonly _ethereumService: EthereumService = inject(EthereumService);
     private readonly _hoodiNetworkService: HoodiNetworkService = inject(HoodiNetworkService);
 
-    walletInfo: WritableSignal<WalletInfo | null> = this._walletService.walletInfo;
-    message = '';
-    messageType: 'success' | 'error' = 'success';
+    walletInfo: WritableSignal<WalletInfo | null> = this._ethereumService.walletInfo;
+    message: WritableSignal<string> = signal('');
+    messageType:  WritableSignal<'success' | 'error'> = signal('success');
 
     get isWrongNetwork(): boolean {
         return this._hoodiNetworkService.isWrongNetwork(this.walletInfo());
-    }
-
-    ngOnInit() {
-        this._ethereumService.walletInfo$.pipe(
-            takeUntilDestroyed(this._destroyRef),
-            tap((info) => {
-                this.walletInfo.set(info);
-            })
-        ).subscribe()
     }
 
     async connectWallet() {
@@ -86,11 +70,11 @@ export class Wallet implements OnInit {
     }
 
     private showMessage(text: string, type: 'success' | 'error') {
-        this.message = text;
-        this.messageType = type;
+        this.message.set(text);
+        this.messageType.set(type);
 
         setTimeout(() => {
-            this.message = '';
+            this.message.set('');
         }, 5000);
     }
 

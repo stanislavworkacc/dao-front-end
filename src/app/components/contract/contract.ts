@@ -1,12 +1,9 @@
 import {
     Component,
-    OnInit,
-    OnDestroy,
     ChangeDetectionStrategy,
     inject,
-    DestroyRef,
     WritableSignal,
-    signal
+    linkedSignal, signal
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
@@ -19,10 +16,8 @@ import {ProgressSpinnerModule} from 'primeng/progressspinner';
 import {DataViewModule} from 'primeng/dataview';
 import {DividerModule} from 'primeng/divider';
 import {TagModule} from 'primeng/tag';
-import {EthereumService, WalletInfo} from '../../services/ethereum';
-import {Subscription, tap} from 'rxjs';
+import {EthereumService} from '../../services/ethereum';
 import {ethers} from 'ethers';
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 // ERC-20 Token ABI (minimal)
 const ERC20_ABI = [
@@ -49,15 +44,16 @@ const ERC20_ABI = [
     styleUrl: './contract.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class Contract implements OnInit, OnDestroy {
+export class Contract {
     private readonly _ethereumService: EthereumService = inject(EthereumService);
-    private readonly _destroyRef: DestroyRef = inject(DestroyRef);
 
     contractAddress = '0x6645CAe3a4D955d83bDC0dCC746a2fbb4d7E71c1';
     contractAddressError = '';
-    contractInfo: any = null;
+    contractInfo: WritableSignal<any | null> = signal(null);
     isLoading = false;
-    isConnected: WritableSignal<boolean> = signal(false)
+    isConnected: WritableSignal<boolean> = linkedSignal(() => {
+        return !!this._ethereumService.walletInfo()
+    })
 
     // Transfer form
     transferRecipient = '';
@@ -68,21 +64,6 @@ export class Contract implements OnInit, OnDestroy {
     transferError = '';
     transferSuccess = false;
     transferHash = '';
-
-    private subscription: Subscription = new Subscription();
-
-    ngOnInit(): void {
-        this._ethereumService.walletInfo$.pipe(
-            takeUntilDestroyed(this._destroyRef),
-            tap((info: WalletInfo) => {
-                this.isConnected.set(!!info);
-            })
-        ).subscribe()
-    }
-
-    ngOnDestroy(): void {
-        this.subscription.unsubscribe();
-    }
 
     validateContractAddress(): boolean {
         this.contractAddressError = '';
@@ -109,7 +90,7 @@ export class Contract implements OnInit, OnDestroy {
         }
 
         this.isLoading = true;
-        this.contractInfo = null;
+        this.contractInfo.set(null);
 
         try {
             const contract = await this._ethereumService.getContract(
@@ -120,17 +101,17 @@ export class Contract implements OnInit, OnDestroy {
             const [GOVERNANCE_TOKEN] = await Promise.all([
                 contract['GOVERNANCE_TOKEN'],
                 (
-                    await this._ethereumService.getSigner()!.getAddress()
+                    await this._ethereumService.getSigner!.getAddress()
                 ),
             ]);
 
-            this.contractInfo = {
+            this.contractInfo.set({
                 GOVERNANCE_TOKEN: await GOVERNANCE_TOKEN(),
                 // symbol,
                 // decimals,
                 // totalSupply: ethers.formatUnits(totalSupply, decimals),
                 // balance: ethers.formatUnits(balance, decimals),
-            };
+            });
         } catch (error: any) {
             this.contractAddressError =
                 error.message || 'Failed to load contract information';

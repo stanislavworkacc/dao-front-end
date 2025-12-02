@@ -90,11 +90,11 @@
             </div>
         }
 
-        @if (message) {
+        @if (message()) {
             <div class="messages">
                 <p-message
-                        [severity]="messageType"
-                        [text]="message"
+                        [severity]="messageType()"
+                        [text]="message()"
                         styleClass="status-message"
                 >
                 </p-message>

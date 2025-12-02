@@ -44,35 +44,35 @@
                         </div>
                     </div>
 
-                    @if (contractInfo) {
+                    @if (contractInfo()) {
                         <div class="contract-info">
                             <p-divider></p-divider>
 
                             <div class="info-section">
                                 <h4 class="section-title">Contract Information</h4>
 
-                                <p-dataview [value]="[contractInfo]" styleClass="contract-dataview">
+                                <p-dataview [value]="[contractInfo()]" styleClass="contract-dataview">
                                     <ng-template pTemplate="list" let-contract>
                                         <div class="info-grid">
                                             <div class="info-item">
                                                 <label class="info-label">Name:</label>
-                                                <span class="info-value">{{ contract.name }}</span>
+                                                <span class="info-value">{{ contract?.name }}</span>
                                             </div>
                                             <div class="info-item">
                                                 <label class="info-label">Symbol:</label>
-                                                <span class="info-value">{{ contract.symbol }}</span>
+                                                <span class="info-value">{{ contract?.symbol }}</span>
                                             </div>
                                             <div class="info-item">
                                                 <label class="info-label">Decimals:</label>
-                                                <span class="info-value">{{ contract.decimals }}</span>
+                                                <span class="info-value">{{ contract?.decimals }}</span>
                                             </div>
                                             <div class="info-item">
                                                 <label class="info-label">Total Supply:</label>
-                                                <span class="info-value">{{ contract.totalSupply }}</span>
+                                                <span class="info-value">{{ contract?.totalSupply }}</span>
                                             </div>
                                             <div class="info-item">
                                                 <label class="info-label">Your Balance:</label>
-                                                <span class="info-value">{{ contract.balance }}</span>
+                                                <span class="info-value">{{ contract?.balance }}</span>
                                             </div>
                                         </div>
                                     </ng-template>
@@ -80,7 +80,7 @@
                             </div>
                         </div>
                     }
-                    @if (contractInfo) {
+                    @if (contractInfo()) {
                         <div class="transfer-section">
                             <p-divider></p-divider>
 
