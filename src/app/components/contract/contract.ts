@@ -119,9 +119,6 @@ export class Contract implements OnInit, OnDestroy {
                 // totalSupply: ethers.formatUnits(totalSupply, decimals),
                 // balance: ethers.formatUnits(balance, decimals),
             };
-
-
-            debugger;
         } catch (error: any) {
             this.contractAddressError =
                 error.message || 'Failed to load contract information';

@@ -1,94 +1,100 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { CardModule } from 'primeng/card';
-import { ButtonModule } from 'primeng/button';
-import { InputTextModule } from 'primeng/inputtext';
-import { MessageModule } from 'primeng/message';
-import { ChipModule } from 'primeng/chip';
-import { DividerModule } from 'primeng/divider';
-import { EthereumService, WalletInfo } from '../../services/ethereum';
-import { Subscription } from 'rxjs';
+import {
+    Component,
+    OnInit,
+    OnDestroy,
+    inject,
+    DestroyRef,
+    ChangeDetectionStrategy,
+    WritableSignal,
+    signal
+} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {CardModule} from 'primeng/card';
+import {ButtonModule} from 'primeng/button';
+import {InputTextModule} from 'primeng/inputtext';
+import {MessageModule} from 'primeng/message';
+import {ChipModule} from 'primeng/chip';
+import {DividerModule} from 'primeng/divider';
+import {EthereumService, WalletInfo} from '../../services/ethereum';
+import {Subscription, tap} from 'rxjs';
+import {HoodiNetworkService} from "../../services/hoodi-network.service";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'app-wallet',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    CardModule,
-    ButtonModule,
-    InputTextModule,
-    MessageModule,
-    ChipModule,
-    DividerModule,
-  ],
-  templateUrl: './wallet.html',
-  styleUrls: ['./wallet.scss'],
+    selector: 'app-wallet',
+    standalone: true,
+    imports: [
+        CommonModule,
+        FormsModule,
+        CardModule,
+        ButtonModule,
+        InputTextModule,
+        MessageModule,
+        ChipModule,
+        DividerModule,
+    ],
+    templateUrl: './wallet.html',
+    styleUrls: ['./wallet.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class Wallet implements OnInit, OnDestroy {
-  isConnected = false;
-  walletInfo: WalletInfo | null = null;
-  message = '';
-  messageType: 'success' | 'error' = 'success';
-  private subscription = new Subscription();
+export class Wallet implements OnInit {
+    private readonly _destroyRef: DestroyRef = inject(DestroyRef);
+    private readonly _ethereumService: EthereumService = inject(EthereumService);
+    private readonly _hoodiNetworkService: HoodiNetworkService = inject(HoodiNetworkService);
 
-  constructor(private ethereumService: EthereumService) {}
+    walletInfo: WritableSignal<WalletInfo | null> = signal(null);
+    message = '';
+    messageType: 'success' | 'error' = 'success';
 
-  ngOnInit() {
-    this.subscription.add(
-      this.ethereumService.walletInfo$.subscribe((info) => {
-        this.walletInfo = info;
-        this.isConnected = info !== null;
-      })
-    );
-  }
-
-  ngOnDestroy() {
-    this.subscription.unsubscribe();
-  }
-
-  async connectWallet() {
-    try {
-      const success = await this.ethereumService.connectWallet();
-      if (success) {
-        this.showMessage('Wallet connected successfully!', 'success');
-      } else {
-        this.showMessage(
-          'Failed to connect wallet. Please make sure MetaMask is installed and unlocked.',
-          'error'
-        );
-      }
-    } catch (error) {
-      this.showMessage(
-        'Failed to connect wallet: ' + (error as Error).message,
-        'error'
-      );
+    ngOnInit() {
+        this._ethereumService.walletInfo$.pipe(
+            takeUntilDestroyed(this._destroyRef),
+            tap((info) => {
+                this.walletInfo.set(info);
+            })
+        ).subscribe()
     }
-  }
 
-  async disconnectWallet() {
-    try {
-      await this.ethereumService.disconnectWallet();
-      this.showMessage('Wallet disconnected successfully!', 'success');
-    } catch (error) {
-      this.showMessage(
-        'Failed to disconnect wallet: ' + (error as Error).message,
-        'error'
-      );
+    async connectWallet() {
+        try {
+            const success: boolean = await this._ethereumService.connectWallet();
+            if (success) {
+                this.showMessage('Wallet connected successfully!', 'success');
+            } else {
+                this.showMessage('Failed to connect wallet. Please make sure MetaMask is installed and unlocked.', 'error');
+            }
+        } catch (error) {
+            this.showMessage('Failed to connect wallet: ' + (error as Error).message, 'error');
+        }
     }
-  }
 
-  formatAddress(address: string): string {
-    if (!address) return '';
-    return `${address.slice(0, 6)}...${address.slice(-4)}`;
-  }
+    async disconnectWallet() {
+        try {
+            await this._ethereumService.disconnectWallet();
+            this.showMessage('Wallet disconnected successfully!', 'success');
+        } catch (error) {
+            this.showMessage(
+                'Failed to disconnect wallet: ' + (error as Error).message,
+                'error'
+            );
+        }
+    }
 
-  private showMessage(text: string, type: 'success' | 'error') {
-    this.message = text;
-    this.messageType = type;
-    setTimeout(() => {
-      this.message = '';
-    }, 5000);
-  }
+    formatAddress(address: string): string {
+        if (!address) return '';
+        return `${address.slice(0, 6)}...${address.slice(-4)}`;
+    }
+
+    private showMessage(text: string, type: 'success' | 'error') {
+        this.message = text;
+        this.messageType = type;
+        setTimeout(() => {
+            this.message = '';
+        }, 5000);
+    }
+
+    async switchToHoodi() {
+        await this._hoodiNetworkService.switchToHoodiNetwork();
+    }
 }

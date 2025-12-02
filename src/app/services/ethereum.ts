@@ -21,6 +21,7 @@ export class EthereumService {
 
     constructor() {
         this.checkWalletConnection();
+        this.initListeners();
     }
 
     async connectWallet(): Promise<boolean> {
@@ -58,7 +59,28 @@ export class EthereumService {
         }
     }
 
-    private async updateWalletInfo(): Promise<void> {
+    private initListeners(): void {
+        if (typeof window.ethereum === 'undefined') return;
+
+        window.ethereum.on('chainChanged', async () => {
+            this.provider = new ethers.BrowserProvider(window.ethereum);
+            this.signer = await this.provider.getSigner();
+
+            await this.updateWalletInfo();
+        });
+
+        window.ethereum.on('accountsChanged', async (accounts: string[]) => {
+            if (!accounts.length) {
+                await this.disconnectWallet();
+            } else {
+                this.provider = new ethers.BrowserProvider(window.ethereum);
+                this.signer = await this.provider.getSigner();
+                await this.updateWalletInfo();
+            }
+        });
+    }
+
+    async updateWalletInfo(): Promise<void> {
         if (!this.signer || !this.provider) return;
 
         try {
