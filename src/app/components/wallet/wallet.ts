@@ -1,7 +1,6 @@
 import {
     Component,
     OnInit,
-    OnDestroy,
     inject,
     DestroyRef,
     ChangeDetectionStrategy,
@@ -80,10 +79,7 @@ export class Wallet implements OnInit {
             await this._ethereumService.disconnectWallet();
             this.showMessage('Wallet disconnected successfully!', 'success');
         } catch (error) {
-            this.showMessage(
-                'Failed to disconnect wallet: ' + (error as Error).message,
-                'error'
-            );
+            this.showMessage('Failed to disconnect wallet: ' + (error as Error).message, 'error');
         }
     }
 

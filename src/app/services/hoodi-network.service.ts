@@ -36,8 +36,8 @@ export class HoodiNetworkService {
                                 symbol: 'HOODI',
                                 decimals: 18
                             },
-                            rpcUrls: ['https://your-hooodi-rpc'],
-                            blockExplorerUrls: ['https://your-hooodi-explorer']
+                            rpcUrls: ['https://0xrpc.io/hoodi'],
+                            blockExplorerUrls: ['https://https://hoodi.etherscan.io']
                         }
                     ],
                 });
