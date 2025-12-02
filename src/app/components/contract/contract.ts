@@ -1,4 +1,4 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnInit, OnDestroy, ChangeDetectionStrategy} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {ButtonModule} from 'primeng/button';
@@ -37,6 +37,7 @@ const ERC20_ABI = [
     ],
     templateUrl: './contract.html',
     styleUrl: './contract.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Contract implements OnInit, OnDestroy {
     contractAddress = '0x6645CAe3a4D955d83bDC0dCC746a2fbb4d7E71c1';

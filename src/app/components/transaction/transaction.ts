@@ -1,4 +1,4 @@
-import {Component, OnInit, OnDestroy, inject, DestroyRef} from '@angular/core';
+import {Component, OnInit, OnDestroy, inject, DestroyRef, ChangeDetectionStrategy} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {ButtonModule} from 'primeng/button';
@@ -30,6 +30,7 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
     ],
     templateUrl: './transaction.html',
     styleUrls: ['./transaction.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Transaction implements OnInit {
     private readonly _ethereumService: EthereumService = inject(EthereumService);
