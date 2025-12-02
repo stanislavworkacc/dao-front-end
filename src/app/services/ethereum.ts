@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {ethers} from 'ethers';
+import {ethers, Network} from 'ethers';
 import {BehaviorSubject, Observable} from 'rxjs';
 
 export interface WalletInfo {
@@ -15,12 +15,12 @@ export interface WalletInfo {
 export class EthereumService {
     private provider: ethers.BrowserProvider | null = null;
     private signer: ethers.JsonRpcSigner | null = null;
-    private walletInfoSubject = new BehaviorSubject<WalletInfo | null>(null);
 
+    private walletInfoSubject = new BehaviorSubject<WalletInfo | null>(null);
     public walletInfo$ = this.walletInfoSubject.asObservable();
 
     constructor() {
-        this.checkWalletConnection();
+        // this.checkWalletConnection();
         this.initListeners();
     }
 
@@ -84,9 +84,9 @@ export class EthereumService {
         if (!this.signer || !this.provider) return;
 
         try {
-            const address = await this.signer.getAddress();
-            const balance = await this.provider.getBalance(address);
-            const network = await this.provider.getNetwork();
+            const address: string = await this.signer.getAddress();
+            const balance: bigint = await this.provider.getBalance(address);
+            const network: Network = await this.provider.getNetwork();
 
             const walletInfo: WalletInfo = {
                 address: address,

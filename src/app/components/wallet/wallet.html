@@ -16,18 +16,6 @@
         <p-divider></p-divider>
 
         <div class="wallet-actions">
-            <div class="action-group">
-                <label class="action-label">Connect to MetaMask</label>
-                <p-button
-                        label="Connect Wallet"
-                        icon="pi pi-wallet"
-                        severity="primary"
-                        [disabled]="walletInfo()"
-                        (onClick)="connectWallet()"
-                        styleClass="connect-btn"
-                >
-                </p-button>
-            </div>
 
             @if (walletInfo()) {
                 <div class="action-group">
@@ -40,11 +28,28 @@
                             styleClass="disconnect-btn"
                     >
                     </p-button>
+
+
+                    @if (isWrongNetwork) {
+                        <label class="action-label">Wrong network detected</label>
+                        <p-button (click)="switchToHoodi()">Switch to Hoodi</p-button>
+                    }
+                </div>
+            } @else {
+                <div class="action-group">
+                    <label class="action-label">Connect to MetaMask</label>
+                    <p-button
+                            label="Connect Wallet"
+                            icon="pi pi-wallet"
+                            severity="primary"
+                            [disabled]="walletInfo()"
+                            (onClick)="connectWallet()"
+                            styleClass="connect-btn"
+                    >
+                    </p-button>
                 </div>
             }
         </div>
-
-        <p-button (click)="switchToHoodi()">Switch to Hoodi</p-button>
 
         @if (walletInfo()) {
             <div class="wallet-info">
@@ -56,9 +61,18 @@
                     <div class="info-item">
                         <label class="info-label">Address:</label>
                         <div class="address-display">
-                            <span class="address-text">{{ formatAddress(walletInfo()?.address) }}</span>
+                            <span class="address-text">{{ walletInfo()?.address | formatAddress }}</span>
+
+                            <label class="info-label">Network Name:</label>
                             <p-chip
                                     [label]="walletInfo()?.networkName"
+                                    icon="pi pi-globe"
+                                    styleClass="network-chip">
+                            </p-chip>
+
+                            <label class="info-label">Chain Id:</label>
+                            <p-chip
+                                    [label]="walletInfo()?.chainId.toString()"
                                     icon="pi pi-globe"
                                     styleClass="network-chip">
                             </p-chip>
@@ -75,6 +89,7 @@
                 </div>
             </div>
         }
+
         @if (message) {
             <div class="messages">
                 <p-message

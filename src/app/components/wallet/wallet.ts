@@ -17,9 +17,10 @@ import {MessageModule} from 'primeng/message';
 import {ChipModule} from 'primeng/chip';
 import {DividerModule} from 'primeng/divider';
 import {EthereumService, WalletInfo} from '../../services/ethereum';
-import {Subscription, tap} from 'rxjs';
+import {tap} from 'rxjs';
 import {HoodiNetworkService} from "../../services/hoodi-network.service";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {FormatAddressPipe} from "./format-address.pipe";
 
 @Component({
     selector: 'app-wallet',
@@ -33,6 +34,7 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
         MessageModule,
         ChipModule,
         DividerModule,
+        FormatAddressPipe,
     ],
     templateUrl: './wallet.html',
     styleUrls: ['./wallet.scss'],
@@ -46,6 +48,10 @@ export class Wallet implements OnInit {
     walletInfo: WritableSignal<WalletInfo | null> = signal(null);
     message = '';
     messageType: 'success' | 'error' = 'success';
+
+    get isWrongNetwork(): boolean {
+        return this._hoodiNetworkService.isWrongNetwork(this.walletInfo());
+    }
 
     ngOnInit() {
         this._ethereumService.walletInfo$.pipe(
@@ -79,11 +85,6 @@ export class Wallet implements OnInit {
                 'error'
             );
         }
-    }
-
-    formatAddress(address: string): string {
-        if (!address) return '';
-        return `${address.slice(0, 6)}...${address.slice(-4)}`;
     }
 
     private showMessage(text: string, type: 'success' | 'error') {
