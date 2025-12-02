@@ -26,7 +26,7 @@ export class EthereumService {
 
     async connectWallet(): Promise<boolean> {
         try {
-            if (typeof window.ethereum === 'undefined') {
+            if (!window.ethereum) {
                 throw new Error('MetaMask is not installed');
             }
 
@@ -48,7 +48,7 @@ export class EthereumService {
     }
 
     async checkWalletConnection(): Promise<void> {
-        if (typeof window.ethereum !== 'undefined') {
+        if (window.ethereum) {
             try {
                 this.provider = new ethers.BrowserProvider(window.ethereum);
                 this.signer = await this.provider.getSigner();
@@ -60,7 +60,7 @@ export class EthereumService {
     }
 
     private initListeners(): void {
-        if (typeof window.ethereum === 'undefined') return;
+        if (!window.ethereum) return;
 
         window.ethereum.on('chainChanged', async (_chainId: string) => {
             this.provider = new ethers.BrowserProvider(window.ethereum);

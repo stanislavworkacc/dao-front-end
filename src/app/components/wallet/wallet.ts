@@ -86,6 +86,7 @@ export class Wallet implements OnInit {
     private showMessage(text: string, type: 'success' | 'error') {
         this.message = text;
         this.messageType = type;
+
         setTimeout(() => {
             this.message = '';
         }, 5000);
