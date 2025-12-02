@@ -1,4 +1,13 @@
-import {Component, OnInit, OnDestroy, inject, DestroyRef, ChangeDetectionStrategy} from '@angular/core';
+import {
+    Component,
+    OnInit,
+    OnDestroy,
+    inject,
+    DestroyRef,
+    ChangeDetectionStrategy,
+    WritableSignal,
+    signal
+} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {ButtonModule} from 'primeng/button';
@@ -38,10 +47,10 @@ export class Transaction implements OnInit {
 
     toAddress = '';
     amount: number | null = null;
-    isSending = false;
-    lastTransaction = '';
-    message = '';
-    messageType: 'success' | 'error' = 'success';
+    isSending: WritableSignal<boolean> = signal(false);
+    lastTransaction: WritableSignal<string> = signal('');
+    message: WritableSignal<string> = signal('');
+    messageType:  WritableSignal<'success' | 'error'> = signal('success');
     addressError = '';
     amountError = '';
 
@@ -119,13 +128,13 @@ export class Transaction implements OnInit {
             return;
         }
 
-        this.isSending = true;
-        this.message = '';
+        this.isSending.set(true);
+        this.message.set('');
 
         try {
             const hash: string = await this._ethereumService.sendTransaction(this.toAddress.trim(), this.amount!.toString());
 
-            this.lastTransaction = hash;
+            this.lastTransaction.set(hash);
             this.showMessage('Transaction sent successfully!', 'success');
 
             // Reset form
@@ -134,7 +143,7 @@ export class Transaction implements OnInit {
         } catch (error) {
             this.showMessage('Transaction failed: ' + (error as Error).message, 'error');
         } finally {
-            this.isSending = false;
+            this.isSending.set(false);
         }
     }
 
@@ -171,10 +180,10 @@ export class Transaction implements OnInit {
     }
 
     private showMessage(text: string, type: 'success' | 'error') {
-        this.message = text;
-        this.messageType = type;
+        this.message.set(text);
+        this.messageType.set(type);
         setTimeout(() => {
-            this.message = '';
+            this.message.set('');
         }, 5000);
     }
 }

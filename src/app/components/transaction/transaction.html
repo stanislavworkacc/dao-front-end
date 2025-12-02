@@ -39,7 +39,7 @@
                             label="Send Transaction"
                             icon="pi pi-send"
                             severity="success"
-                            [loading]="isSending"
+                            [loading]="isSending()"
                             [disabled]="!canSendTransaction()"
                             (onClick)="sendTransaction()"
                             styleClass="send-btn"
@@ -48,7 +48,7 @@
                 </div>
             </div>
 
-            @if (lastTransaction) {
+            @if (lastTransaction()) {
                 <div class="transaction-info">
                     <p-divider></p-divider>
 
@@ -58,15 +58,14 @@
                         <div class="info-item">
                             <label class="info-label">Transaction Hash:</label>
                             <div class="hash-display">
-                                <span class="hash-text">{{ formatHash(lastTransaction) }}</span>
+                                <span class="hash-text">{{ formatHash(lastTransaction()) }}</span>
                                 <p-button
                                         icon="pi pi-external-link"
                                         severity="secondary"
                                         size="small"
-                                        (onClick)="openExplorer(lastTransaction)"
+                                        (onClick)="openExplorer(lastTransaction())"
                                         styleClass="explorer-btn"
-                                >
-                                </p-button>
+                                >Open</p-button>
                             </div>
                         </div>
 
@@ -77,11 +76,11 @@
                     </div>
                 </div>
             }
-            @if (message) {
+            @if (message()) {
                 <div class="messages">
                     <p-message
-                            [severity]="messageType"
-                            [text]="message"
+                            [severity]="messageType()"
+                            [text]="message()"
                             styleClass="status-message"
                     >
                     </p-message>
