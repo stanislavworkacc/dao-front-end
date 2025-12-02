@@ -18,7 +18,21 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Amount (ETH)</label>
+                    <label class="form-label">Asset</label>
+                    <p-dropdown
+                            [options]="transactionService.assets()"
+                            optionLabel="label"
+                            (onChange)="onAssetChange($event)"
+                            [style]="{ width: '100%' }"
+                    ></p-dropdown>
+                </div>
+
+                <!-- Amount -->
+                <div class="form-group">
+                    <label class="form-label">
+                        Amount ({{ transactionService.selectedAsset().symbol }})
+                    </label>
+
                     <input
                             type="number"
                             [(ngModel)]="amount"
@@ -34,24 +48,15 @@
                     }
                 </div>
 
+                <!-- Одна кнопка -->
                 <div class="transaction-actions">
                     <p-button
-                            label="Send Transaction"
+                            label="Send {{ transactionService.selectedAsset().symbol }}"
                             icon="pi pi-send"
                             severity="success"
                             [loading]="isSending()"
                             [disabled]="!canSendTransaction"
-                            (onClick)="sendTransaction()"
-                            styleClass="send-btn"
-                    ></p-button>
-
-                    <p-button
-                            label="Send SBEL TOKEN"
-                            icon="pi pi-send"
-                            severity="success"
-                            [loading]="isSending()"
-                            [disabled]="!canSendTransaction"
-                            (onClick)="sendErc20Transaction()"
+                            (onClick)="submit()"
                             styleClass="send-btn"
                     ></p-button>
                 </div>
@@ -67,7 +72,7 @@
                         <div class="info-item">
                             <label class="info-label">Transaction Hash:</label>
                             <div class="hash-display">
-                                <span class="hash-text">{{ formatHash(lastTransaction()) }}</span>
+                                <span class="hash-text">{{ lastTransaction() | formatHash }}</span>
                                 <p-button
                                         icon="pi pi-external-link"
                                         severity="secondary"

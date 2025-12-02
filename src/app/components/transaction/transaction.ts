@@ -17,6 +17,9 @@ import {ChipModule} from 'primeng/chip';
 import {EthereumService} from '../../services/ethereum';
 import {DividerModule} from 'primeng/divider';
 import {Erh20Service} from "../../services/erh-20.service";
+import {TransactionService} from "./transaction.service";
+import {FormatHashPipe} from "../../core/pipes/format-hash.pipe";
+import {DropdownChangeEvent, DropdownModule} from "primeng/dropdown";
 
 @Component({
     selector: 'app-transaction',
@@ -32,14 +35,20 @@ import {Erh20Service} from "../../services/erh-20.service";
         ProgressSpinnerModule,
         ChipModule,
         DividerModule,
+        FormatHashPipe,
+        DropdownModule,
     ],
     templateUrl: './transaction.html',
     styleUrls: ['./transaction.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    providers: [
+        TransactionService
+    ]
 })
 export class Transaction {
     private readonly _ethereumService: EthereumService = inject(EthereumService);
     private readonly _erh20Service: Erh20Service = inject(Erh20Service);
+    readonly transactionService: TransactionService = inject(TransactionService);
 
     toAddress = '';
     amount: number | null = null;
@@ -94,6 +103,17 @@ export class Transaction {
         if (this.amount > 1000) {
             this.amountError = 'Amount cannot exceed 1000 ETH';
             return;
+        }
+    }
+
+    async submit(): Promise<void> {
+        switch (this.transactionService.selectedAsset().type) {
+            case "ERC20":
+                await this.sendErc20Transaction();
+                break;
+            case "NATIVE":
+                await this.sendTransaction();
+                break;
         }
     }
 
@@ -157,11 +177,6 @@ export class Transaction {
         }
     }
 
-    formatHash(hash: string): string {
-        if (!hash) return '';
-        return `${hash.slice(0, 10)}...${hash.slice(-8)}`;
-    }
-
     openExplorer(hash: string) {
         const network: string = this.getCurrentNetwork();
         const explorerUrl = this.getExplorerUrl(network, hash);
@@ -195,5 +210,9 @@ export class Transaction {
         setTimeout(() => {
             this.message.set('');
         }, 5000);
+    }
+
+    onAssetChange(event: DropdownChangeEvent) {
+        this.transactionService.selectedAsset.set(event.value)
     }
 }

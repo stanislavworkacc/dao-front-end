@@ -1,6 +1,7 @@
 import {inject, Injectable} from '@angular/core';
 import {EthereumService} from "./ethereum";
 import {ethers} from "ethers";
+import {environment} from "../../environments/environment";
 
 export const ERC20_ABI = [
     'function name() view returns (string)',
@@ -15,8 +16,6 @@ export const ERC20_ABI = [
   providedIn: 'root'
 })
 export class Erh20Service {
-    SBEL_ADDRESS = '0x4495D640EAEbdF22b5B3EadD11514d18056db723';
-
     private readonly _ethereumService: EthereumService = inject(EthereumService);
 
     async sendErc20Token(
@@ -29,7 +28,7 @@ export class Erh20Service {
         }
 
         try {
-            const erc20 = new ethers.Contract(this.SBEL_ADDRESS, ERC20_ABI, this._ethereumService.getSigner);
+            const erc20 = new ethers.Contract(environment.TOKEN_CONTRACT, ERC20_ABI, this._ethereumService.getSigner);
             const amountWei: bigint = ethers.parseUnits(amount, decimals);
 
             const tx = await erc20['transfer'](to, amountWei);
