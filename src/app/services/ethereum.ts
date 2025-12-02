@@ -1,5 +1,6 @@
 import {Injectable, signal, WritableSignal} from '@angular/core';
 import {ethers, Network} from 'ethers';
+import {HOODI_NETWORK} from "../blockchain/hoodi-network.config";
 
 export interface WalletInfo {
     address: string;
@@ -47,7 +48,6 @@ export class EthereumService {
             const accounts = await window.ethereum.request({
                 method: "eth_requestAccounts",
             });
-
 
             if (!accounts || !accounts.length) {
                 this.walletInfo.set(null);
