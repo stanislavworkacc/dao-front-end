@@ -40,7 +40,7 @@
                             icon="pi pi-send"
                             severity="success"
                             [loading]="isSending()"
-                            [disabled]="!canSendTransaction()"
+                            [disabled]="!canSendTransaction"
                             (onClick)="sendTransaction()"
                             styleClass="send-btn"
                     >

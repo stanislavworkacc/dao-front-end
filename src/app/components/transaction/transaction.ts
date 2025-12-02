@@ -54,6 +54,16 @@ export class Transaction implements OnInit {
     addressError = '';
     amountError = '';
 
+    get canSendTransaction(): boolean {
+        return (
+            this.toAddress.trim() !== '' &&
+            this.amount !== null &&
+            this.amount > 0 &&
+            !this.addressError &&
+            !this.amountError
+        );
+    }
+
     ngOnInit(): void {
         this.listenWalletChanges();
     }
@@ -75,16 +85,6 @@ export class Transaction implements OnInit {
         } catch (error) {
             console.error('Failed to load gas price:', error);
         }
-    }
-
-    canSendTransaction(): boolean {
-        return (
-            this.toAddress.trim() !== '' &&
-            this.amount !== null &&
-            this.amount > 0 &&
-            !this.addressError &&
-            !this.amountError
-        );
     }
 
     validateAddress(): void {
@@ -117,10 +117,6 @@ export class Transaction implements OnInit {
     }
 
     async sendTransaction(): Promise<void> {
-        if (!this.canSendTransaction()) {
-            return;
-        }
-
         this.validateAddress();
         this.validateAmount();
 
