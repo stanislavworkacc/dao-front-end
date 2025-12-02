@@ -1,4 +1,4 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnInit, OnDestroy, inject, DestroyRef} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {ButtonModule} from 'primeng/button';
@@ -8,9 +8,10 @@ import {InputNumberModule} from 'primeng/inputnumber';
 import {MessageModule} from 'primeng/message';
 import {ProgressSpinnerModule} from 'primeng/progressspinner';
 import {ChipModule} from 'primeng/chip';
-import {EthereumService} from '../../services/ethereum';
-import {Subscription} from 'rxjs';
+import {EthereumService, WalletInfo} from '../../services/ethereum';
+import {Subscription, tap} from 'rxjs';
 import {DividerModule} from 'primeng/divider';
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
     selector: 'app-transaction',
@@ -30,7 +31,10 @@ import {DividerModule} from 'primeng/divider';
     templateUrl: './transaction.html',
     styleUrls: ['./transaction.scss'],
 })
-export class Transaction implements OnInit, OnDestroy {
+export class Transaction implements OnInit {
+    private readonly _ethereumService: EthereumService = inject(EthereumService);
+    private readonly _destroyRef: DestroyRef = inject(DestroyRef);
+
     toAddress = '';
     amount: number | null = null;
     isSending = false;
@@ -40,23 +44,19 @@ export class Transaction implements OnInit, OnDestroy {
     addressError = '';
     amountError = '';
 
-    private subscription: Subscription = new Subscription();
-
-    constructor(private ethereumService: EthereumService) {
+    ngOnInit(): void {
+        this.listenWalletChanges();
     }
 
-    ngOnInit(): void {
-        this.subscription.add(
-            this.ethereumService.walletInfo$.subscribe((info) => {
-                if (info !== null) {
+    listenWalletChanges() {
+        this._ethereumService.walletInfo$.pipe(
+            takeUntilDestroyed(this._destroyRef),
+            tap((info: WalletInfo) => {
+                if (!info) {
                     this.loadGasPrice();
                 }
             })
-        );
-    }
-
-    ngOnDestroy(): void {
-        this.subscription.unsubscribe();
+        ).subscribe()
     }
 
     async loadGasPrice(): Promise<void> {
@@ -122,7 +122,7 @@ export class Transaction implements OnInit, OnDestroy {
         this.message = '';
 
         try {
-            const hash: string = await this.ethereumService.sendTransaction(this.toAddress.trim(), this.amount!.toString());
+            const hash: string = await this._ethereumService.sendTransaction(this.toAddress.trim(), this.amount!.toString());
 
             this.lastTransaction = hash;
             this.showMessage('Transaction sent successfully!', 'success');
@@ -131,10 +131,7 @@ export class Transaction implements OnInit, OnDestroy {
             this.toAddress = '';
             this.amount = null;
         } catch (error) {
-            this.showMessage(
-                'Transaction failed: ' + (error as Error).message,
-                'error'
-            );
+            this.showMessage('Transaction failed: ' + (error as Error).message, 'error');
         } finally {
             this.isSending = false;
         }
