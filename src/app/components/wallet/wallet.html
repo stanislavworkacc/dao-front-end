@@ -62,21 +62,21 @@
                         <label class="info-label">Address:</label>
                         <div class="address-display">
                             <span class="address-text">{{ walletInfo()?.address | formatAddress }}</span>
-
-                            <label class="info-label">Network Name:</label>
-                            <p-chip
-                                    [label]="walletInfo()?.networkName"
-                                    icon="pi pi-globe"
-                                    styleClass="network-chip">
-                            </p-chip>
-
-                            <label class="info-label">Chain Id:</label>
-                            <p-chip
-                                    [label]="walletInfo()?.chainId.toString()"
-                                    icon="pi pi-globe"
-                                    styleClass="network-chip">
-                            </p-chip>
                         </div>
+
+                        <label class="info-label">Network Name:</label>
+                        <p-chip
+                                [label]="walletInfo()?.networkName"
+                                icon="pi pi-globe"
+                                styleClass="network-chip">
+                        </p-chip>
+
+                        <label class="info-label">Chain Id:</label>
+                        <p-chip
+                                [label]="walletInfo()?.chainId.toString()"
+                                icon="pi pi-globe"
+                                styleClass="network-chip">
+                        </p-chip>
                     </div>
 
                     <div class="info-item">
