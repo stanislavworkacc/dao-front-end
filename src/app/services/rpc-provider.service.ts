@@ -1,19 +1,18 @@
 import {Injectable} from '@angular/core';
-import {HOODI_NETWORK} from "../blockchain/hoodi-network.config";
-import {ethers} from "ethers";
+import {ethers, JsonRpcProvider} from "ethers";
+import {HOODI_NETWORK} from "../core/blockchain/networks.config";
 
 @Injectable({
     providedIn: 'root'
 })
 export class RpcProviderService {
 
-    private readonly rpcProvider: ethers.JsonRpcProvider =
-        new ethers.JsonRpcProvider(
-            HOODI_NETWORK.rpcUrls.default.http[0],
-            HOODI_NETWORK.id,
-        );
+    private readonly rpcProvider: JsonRpcProvider = new ethers.JsonRpcProvider(
+        HOODI_NETWORK.rpcUrls[0],
+        HOODI_NETWORK.id,
+    );
 
-    get getRpcProvider(): ethers.JsonRpcProvider {
+    get getRpcProvider(): JsonRpcProvider {
         return this.rpcProvider;
     }
 

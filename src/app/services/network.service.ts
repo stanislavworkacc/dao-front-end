@@ -1,6 +1,8 @@
-// hoodi-network.service.ts
 import {Injectable} from '@angular/core';
-import {AppNetwork, HOODI_NETWORK} from "../blockchain/networks.config";
+import {ethereumConstants} from "../core/constants/ethereum.constants";
+import {WalletInfo} from "./ethereum";
+import {networkConstantsId} from "../core/constants/network.constants";
+import {AppNetwork, HOODI_NETWORK} from "../core/blockchain/networks.config";
 
 @Injectable({providedIn: 'root'})
 export class NetworkService {
@@ -12,21 +14,21 @@ export class NetworkService {
 
         try {
             await window.ethereum.request({
-                method: 'wallet_switchEthereumChain',
+                method: ethereumConstants.switchEthereumChain,
                 params: [{chainId: network.chainIdHex}],
             });
         } catch (error: any) {
             if (error.code === 4902) {
-                await this.donHaveHoodiInWallet(network)
+                await this.addChain(network)
             } else {
                 throw error;
             }
         }
     }
 
-    async donHaveHoodiInWallet(network) {
+    async addChain(network: AppNetwork) {
         await window.ethereum.request({
-            method: 'wallet_addEthereumChain',
+            method: ethereumConstants.addEthereumChain,
             params: [{
                 chainId: network.chainIdHex,
                 chainName: network.name,
@@ -35,10 +37,14 @@ export class NetworkService {
                     symbol: network.symbol,
                     decimals: network.decimals,
                 },
-                rpcUrls: ['https://ethereum-hoodi-rpc.publicnode.com'], // твій RPC
-                blockExplorerUrls: ['https://hoodi.etherscan.io/'],      // твій explorer
+                rpcUrls: network.rpcUrls,
+                blockExplorerUrls: network.explorerUrls,
             }],
         });
+    }
+
+    isHoodiNetwork(info: WalletInfo | null): boolean {
+        return !!info && info.chainId === networkConstantsId.hoodi;
     }
 
     async switchToHoodi(): Promise<void> {

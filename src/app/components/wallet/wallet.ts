@@ -14,8 +14,9 @@ import {MessageModule} from 'primeng/message';
 import {ChipModule} from 'primeng/chip';
 import {DividerModule} from 'primeng/divider';
 import {EthereumService, WalletInfo} from '../../services/ethereum';
-import {HoodiNetworkService} from "../../services/hoodi-network.service";
 import {FormatAddressPipe} from "../../core/pipes/format-address.pipe";
+import {NetworkService} from "../../services/network.service";
+import {msgStateConstants} from "../../core/constants/msg-state.constants";
 
 @Component({
     selector: 'app-wallet',
@@ -37,14 +38,14 @@ import {FormatAddressPipe} from "../../core/pipes/format-address.pipe";
 })
 export class Wallet {
     private readonly _ethereumService: EthereumService = inject(EthereumService);
-    private readonly _hoodiNetworkService: HoodiNetworkService = inject(HoodiNetworkService);
+    private readonly _networkService: NetworkService = inject(NetworkService);
 
     walletInfo: WritableSignal<WalletInfo | null> = this._ethereumService.walletInfo;
     message: WritableSignal<string> = signal('');
-    messageType:  WritableSignal<'success' | 'error'> = signal('success');
+    messageType: WritableSignal<typeof msgStateConstants.success | typeof msgStateConstants.error> = signal(msgStateConstants.success);
 
     get isWrongNetwork(): boolean {
-        return this._hoodiNetworkService.isWrongNetwork(this.walletInfo());
+        return !this._networkService.isHoodiNetwork(this.walletInfo());
     }
 
     async connectWallet() {
@@ -79,6 +80,6 @@ export class Wallet {
     }
 
     async switchToHoodi() {
-        await this._hoodiNetworkService.switchToHoodiNetwork();
+        await this._networkService.switchToHoodi();
     }
 }

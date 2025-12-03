@@ -1,6 +1,5 @@
 import {Injectable, signal, WritableSignal} from '@angular/core';
 import {ethers, Network} from 'ethers';
-import {HOODI_NETWORK} from "../blockchain/hoodi-network.config";
 
 export interface WalletInfo {
     address: string;

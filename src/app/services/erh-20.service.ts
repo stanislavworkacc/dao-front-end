@@ -2,7 +2,7 @@ import {inject, Injectable} from '@angular/core';
 import {EthereumService} from "./ethereum";
 import {ethers} from "ethers";
 import {environment} from "../../environments/environment";
-import {ERC20_ABI} from "../abi/erc20.abi";
+import {ERC20_ABI} from "../core/blockchain/abi/erc20.abi";
 
 @Injectable({
   providedIn: 'root'
