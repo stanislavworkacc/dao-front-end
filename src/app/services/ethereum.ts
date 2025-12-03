@@ -1,6 +1,7 @@
 import {Injectable, signal, WritableSignal} from '@angular/core';
 import {ethers, Network} from 'ethers';
 import {ethereumMethods} from "../core/constants/ethereum.constants";
+import {networkConstantsNames} from "../core/constants/network.constants";
 
 export interface WalletInfo {
     address: string;
@@ -33,10 +34,6 @@ export class EthereumService {
 
     get getSigner(): ethers.JsonRpcSigner | null {
         return this.signer;
-    }
-
-    get getCurrentWalletInfo(): WalletInfo | null {
-        return this.walletInfo();
     }
 
     async connectWallet(): Promise<boolean> {
@@ -127,33 +124,12 @@ export class EthereumService {
                 address: address,
                 balance: ethers.formatEther(balance),
                 chainId: Number(network.chainId),
-                networkName: this.getNetworkName(Number(network.chainId)),
+                networkName: networkConstantsNames[(Number(network.chainId))] || `Chain ID ${network.chainId}`,
             };
 
             this.walletInfo.set(walletInfo);
         } catch (error) {
             console.error('Error updating wallet info:', error);
-        }
-    }
-
-    private getNetworkName(chainId: number): string {
-        switch (chainId) {
-            case 1:
-                return 'Ethereum Mainnet';
-            case 5:
-                return 'Goerli Testnet';
-            case 11155111:
-                return 'Sepolia Testnet';
-            case 137:
-                return 'Polygon Mainnet';
-            case 80001:
-                return 'Mumbai Testnet';
-            case 1337:
-                return 'Localhost';
-            case 560048:
-                return 'Hoodi';
-            default:
-                return `Chain ID ${chainId}`;
         }
     }
 
