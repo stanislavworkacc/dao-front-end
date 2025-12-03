@@ -41,9 +41,6 @@ import {DropdownChangeEvent, DropdownModule} from "primeng/dropdown";
     templateUrl: './transaction.html',
     styleUrls: ['./transaction.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [
-        TransactionService
-    ]
 })
 export class Transaction {
     private readonly _ethereumService: EthereumService = inject(EthereumService);

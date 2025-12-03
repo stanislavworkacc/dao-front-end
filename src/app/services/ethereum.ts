@@ -36,6 +36,10 @@ export class EthereumService {
         return this.signer;
     }
 
+    get getCurrentWalletInfo(): WalletInfo | null {
+        return this.walletInfo();
+    }
+
     async connectWallet(): Promise<boolean> {
         try {
             if (!window.ethereum) {
