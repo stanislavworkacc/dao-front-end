@@ -1,15 +1,18 @@
 import {effect, inject, Injectable, signal, WritableSignal} from '@angular/core';
 import {environment} from "../../../environments/environment";
 import {tokensConstants} from "../../core/constants/tokens.constants";
-import {EthereumService} from "../../services/ethereum";
-import {ethers} from "ethers";
+import {EthereumService, WalletInfo} from "../../services/ethereum";
+import {ethers, JsonRpcProvider} from "ethers";
 import {ERC20_ABI} from "../../core/blockchain/abi/erc20.abi";
+import {RpcProviderService} from "../../services/rpc-provider.service";
 
 @Injectable({
     providedIn: 'root',
 })
 export class TransactionService {
     private readonly eth: EthereumService = inject(EthereumService);
+    private readonly rpc: RpcProviderService = inject(RpcProviderService);
+
 
     assets: WritableSignal<AssetOption[]> = signal([
         {
@@ -46,41 +49,44 @@ export class TransactionService {
     }
 
     async loadAllBalances(): Promise<void> {
-        const wallet = this.eth.getCurrentWalletInfo;
-        const provider = this.eth.getProvider;
+        const wallet: WalletInfo = this.eth.getCurrentWalletInfo;
+        const provider: JsonRpcProvider = this.rpc.getRpcProvider;
 
-        if (!wallet || !provider) {
-            return;
-        }
+        if (!wallet) return;
 
         const updated = await Promise.all(
-            this.assets().map(async (asset: AssetOption): Promise<AssetOption> => {
+            this.assets().map(async (asset) => {
                 try {
                     switch (asset.symbol) {
                         case tokensConstants.ETH: {
-                            const raw: bigint = await provider.getBalance(wallet.address);
-                            const formatted: string = ethers.formatEther(raw);
-                            return { ...asset, balance: formatted };
+                            const raw = await provider.getBalance(wallet.address);
+                            return {
+                                ...asset,
+                                balance: ethers.formatEther(raw),
+                            };
                         }
 
                         case tokensConstants.SBEL: {
-                            if (!asset.tokenAddress) {
-                                return { ...asset, balance: null };
-                            }
+                            if (!asset.tokenAddress) return { ...asset, balance: null };
+
                             const erc20 = new ethers.Contract(
                                 asset.tokenAddress,
                                 ERC20_ABI,
-                                provider,
+                                provider, // 👈 тепер RPC
                             );
-                            const raw: bigint = await erc20['balanceOf'](wallet.address);
-                            return { ...asset, balance: ethers.formatUnits(raw, asset.decimals) };
+
+                            const raw = await erc20['balanceOf'](wallet.address);
+                            return {
+                                ...asset,
+                                balance: ethers.formatUnits(raw, asset.decimals),
+                            };
                         }
 
                         default:
                             return { ...asset, balance: null };
                     }
                 } catch (e) {
-                    console.error('Failed to load balance for', asset.symbol, e);
+                    console.error('Failed to load', asset.symbol, e);
                     return { ...asset, balance: null };
                 }
             }),
