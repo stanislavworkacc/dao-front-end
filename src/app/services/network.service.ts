@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {ethereumConstants} from "../core/constants/ethereum.constants";
+import {ethereumMethods} from "../core/constants/ethereum.constants";
 import {WalletInfo} from "./ethereum";
 import {networkConstantsId} from "../core/constants/network.constants";
 import {AppNetwork, HOODI_NETWORK} from "../core/blockchain/networks.config";
@@ -14,7 +14,7 @@ export class NetworkService {
 
         try {
             await window.ethereum.request({
-                method: ethereumConstants.switchEthereumChain,
+                method: ethereumMethods.switchEthereumChain,
                 params: [{chainId: network.chainIdHex}],
             });
         } catch (error: any) {
@@ -28,7 +28,7 @@ export class NetworkService {
 
     async addChain(network: AppNetwork) {
         await window.ethereum.request({
-            method: ethereumConstants.addEthereumChain,
+            method: ethereumMethods.addEthereumChain,
             params: [{
                 chainId: network.chainIdHex,
                 chainName: network.name,

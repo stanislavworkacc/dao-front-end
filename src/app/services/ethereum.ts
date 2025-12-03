@@ -1,5 +1,6 @@
 import {Injectable, signal, WritableSignal} from '@angular/core';
 import {ethers, Network} from 'ethers';
+import {ethereumMethods} from "../core/constants/ethereum.constants";
 
 export interface WalletInfo {
     address: string;
@@ -45,7 +46,7 @@ export class EthereumService {
             }
 
             const accounts = await window.ethereum.request({
-                method: "eth_requestAccounts",
+                method: ethereumMethods.requestAccounts,
             });
 
             if (!accounts || !accounts.length) {
