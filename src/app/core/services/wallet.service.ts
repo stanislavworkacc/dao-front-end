@@ -41,9 +41,7 @@ export class WalletService {
                 this.loadAllBalances(wallet, assetsSnapshot);
                 return;
             } else {
-                this.assets.update((list) =>
-                    list.map((a) => ({ ...a, balance: null })),
-                );
+                this.assets.update((list: AssetOption[]) => list.map((a) => ({ ...a, balance: null })));
             }
         });
     }
@@ -90,6 +88,7 @@ export class WalletService {
         );
 
         this.assets.set(updated);
+        this.selectedAsset.set(updated[0]);
     }
 
 }
