@@ -20,6 +20,8 @@ import {msgStateConstants} from "../../common/constants/msg-state.constants";
 import {AssetsComponent} from "./assets/assets.component";
 import {WalletService} from "../../core/services/wallet.service";
 import {AssetOption} from "../transaction/transaction.interface";
+import blockies from 'ethereum-blockies';
+
 
 @Component({
     selector: 'app-wallet',
@@ -90,5 +92,16 @@ export class Wallet {
 
     selectAsset(value: AssetOption) {
         this.walletService.selectedAsset.set(value);
+    }
+
+
+    generate(address: string): string {
+        const icon = blockies.create({
+            seed: address.toLowerCase(),
+            size: 8,
+            scale: 5,
+        });
+
+        return icon.toDataURL(); // повертаємо PNG Base64
     }
 }
