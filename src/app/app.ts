@@ -1,16 +1,18 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { Wallet } from './components/wallet/wallet';
-import { Transaction } from './components/transaction/transaction';
-import { Contract } from './components/contract/contract';
+import {Component, inject} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {Wallet} from './components/wallet/wallet';
+import {Transaction} from './components/transaction/transaction';
+import {Contract} from './components/contract/contract';
+import {EthereumService} from "./services/ethereum";
 
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [CommonModule, Wallet, Transaction, Contract],
-  templateUrl: './app.html',
-  styleUrl: './app.scss',
+    selector: 'app-root',
+    standalone: true,
+    imports: [CommonModule, Wallet, Transaction, Contract],
+    templateUrl: './app.html',
+    styleUrl: './app.scss',
 })
 export class App {
-  title = 'angularweb3';
+    readonly ethereumService: EthereumService = inject(EthereumService);
+    title = 'angularweb3';
 }
