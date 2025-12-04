@@ -17,7 +17,7 @@ import {ChipModule} from 'primeng/chip';
 import {EthereumService} from '../../services/ethereum';
 import {DividerModule} from 'primeng/divider';
 import {Erh20Service} from "../../services/erh-20.service";
-import {TransactionService} from "./transaction.service";
+import {TransactionService} from "../../services/transaction.service";
 import {FormatHashPipe} from "../../core/pipes/format-hash.pipe";
 import {DropdownChangeEvent, DropdownModule} from "primeng/dropdown";
 

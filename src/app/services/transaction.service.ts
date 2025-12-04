@@ -1,10 +1,10 @@
 import {effect, inject, Injectable, signal, untracked, WritableSignal} from '@angular/core';
-import {environment} from "../../../environments/environment";
-import {tokensConstants} from "../../core/constants/tokens.constants";
-import {EthereumService, WalletInfo} from "../../services/ethereum";
 import {ethers, JsonRpcProvider} from "ethers";
-import {ERC20_ABI} from "../../core/blockchain/abi/erc20.abi";
-import {RpcProviderService} from "../../services/rpc-provider.service";
+import {EthereumService, WalletInfo} from "./ethereum";
+import {RpcProviderService} from "./rpc-provider.service";
+import {tokensConstants} from "../core/constants/tokens.constants";
+import {environment} from "../../environments/environment";
+import {ERC20_ABI} from "../core/blockchain/abi/erc20.abi";
 
 @Injectable({
     providedIn: 'root',
@@ -12,7 +12,6 @@ import {RpcProviderService} from "../../services/rpc-provider.service";
 export class TransactionService {
     private readonly eth: EthereumService = inject(EthereumService);
     private readonly rpc: RpcProviderService = inject(RpcProviderService);
-
 
     assets: WritableSignal<AssetOption[]> = signal([
         {
