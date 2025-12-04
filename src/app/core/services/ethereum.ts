@@ -1,7 +1,7 @@
 import {Injectable, signal, WritableSignal} from '@angular/core';
 import {ethers, Network} from 'ethers';
-import {ethereumMethods} from "../core/constants/ethereum.constants";
-import {networkConstantsNames} from "../core/constants/network.constants";
+import {ethereumMethods} from "../../common/constants/ethereum.constants";
+import {networkConstantsNames} from "../../common/constants/network.constants";
 
 export interface WalletInfo {
     address: string;

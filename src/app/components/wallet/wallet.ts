@@ -13,10 +13,10 @@ import {InputTextModule} from 'primeng/inputtext';
 import {MessageModule} from 'primeng/message';
 import {ChipModule} from 'primeng/chip';
 import {DividerModule} from 'primeng/divider';
-import {EthereumService, WalletInfo} from '../../services/ethereum';
 import {FormatAddressPipe} from "../../core/pipes/format-address.pipe";
-import {NetworkService} from "../../services/network.service";
-import {msgStateConstants} from "../../core/constants/msg-state.constants";
+import {EthereumService, WalletInfo} from "../../core/services/ethereum";
+import {NetworkService} from "../../core/services/network.service";
+import {msgStateConstants} from "../../common/constants/msg-state.constants";
 
 @Component({
     selector: 'app-wallet',

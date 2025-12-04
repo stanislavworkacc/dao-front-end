@@ -3,7 +3,7 @@ import {CommonModule} from '@angular/common';
 import {Wallet} from './components/wallet/wallet';
 import {Transaction} from './components/transaction/transaction';
 import {Contract} from './components/contract/contract';
-import {EthereumService} from "./services/ethereum";
+import {EthereumService} from "./core/services/ethereum";
 
 @Component({
     selector: 'app-root',

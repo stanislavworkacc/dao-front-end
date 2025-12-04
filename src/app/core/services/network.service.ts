@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
-import {ethereumMethods} from "../core/constants/ethereum.constants";
 import {WalletInfo} from "./ethereum";
-import {networkConstantsId} from "../core/constants/network.constants";
-import {AppNetwork, HOODI_NETWORK} from "../core/blockchain/networks.config";
+import {ethereumMethods} from "../../common/constants/ethereum.constants";
+import {AppNetwork, HOODI_NETWORK} from "../../common/blockchain/networks.config";
+import {networkConstantsId} from "../../common/constants/network.constants";
 
 @Injectable({providedIn: 'root'})
 export class NetworkService {

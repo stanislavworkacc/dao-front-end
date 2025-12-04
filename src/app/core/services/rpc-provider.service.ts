@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {ethers, JsonRpcProvider} from "ethers";
-import {HOODI_NETWORK} from "../core/blockchain/networks.config";
+import {HOODI_NETWORK} from "../../common/blockchain/networks.config";
 
 @Injectable({
     providedIn: 'root'

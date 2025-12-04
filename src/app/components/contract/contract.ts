@@ -16,8 +16,8 @@ import {ProgressSpinnerModule} from 'primeng/progressspinner';
 import {DataViewModule} from 'primeng/dataview';
 import {DividerModule} from 'primeng/divider';
 import {TagModule} from 'primeng/tag';
-import {EthereumService} from '../../services/ethereum';
 import {ethers} from 'ethers';
+import {EthereumService} from "../../core/services/ethereum";
 
 @Component({
     selector: 'app-contract',

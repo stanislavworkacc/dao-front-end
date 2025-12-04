@@ -2,9 +2,9 @@ import {effect, inject, Injectable, signal, untracked, WritableSignal} from '@an
 import {ethers, JsonRpcProvider} from "ethers";
 import {EthereumService, WalletInfo} from "./ethereum";
 import {RpcProviderService} from "./rpc-provider.service";
-import {tokensConstants} from "../core/constants/tokens.constants";
-import {environment} from "../../environments/environment";
-import {ERC20_ABI} from "../core/blockchain/abi/erc20.abi";
+import {tokensConstants} from "../../common/constants/tokens.constants";
+import {environment} from "../../../environments/environment";
+import {ERC20_ABI} from "../../common/blockchain/abi/erc20.abi";
 
 @Injectable({
     providedIn: 'root',
