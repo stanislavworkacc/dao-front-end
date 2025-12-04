@@ -1,4 +1,4 @@
-import {effect, inject, Injectable, signal, WritableSignal} from '@angular/core';
+import {effect, inject, Injectable, signal, untracked, WritableSignal} from '@angular/core';
 import {environment} from "../../../environments/environment";
 import {tokensConstants} from "../../core/constants/tokens.constants";
 import {EthereumService, WalletInfo} from "../../services/ethereum";
@@ -36,11 +36,13 @@ export class TransactionService {
 
     constructor() {
         effect(() => {
-            const wallet = this.eth.walletInfo();
+            const wallet: WalletInfo = this.eth.walletInfo();
+
             if (wallet) {
-                this.loadAllBalances();
+                const assetsSnapshot: AssetOption[] = untracked(() => this.assets());
+                this.loadAllBalances(wallet, assetsSnapshot);
+                return;
             } else {
-                // якщо відключився — обнуляємо
                 this.assets.update((list) =>
                     list.map((a) => ({ ...a, balance: null })),
                 );
@@ -48,14 +50,13 @@ export class TransactionService {
         });
     }
 
-    async loadAllBalances(): Promise<void> {
-        const wallet: WalletInfo = this.eth.getCurrentWalletInfo;
+    async loadAllBalances(wallet: WalletInfo, assetsSnapshot: AssetOption[]): Promise<void> {
         const provider: JsonRpcProvider = this.rpc.getRpcProvider;
 
         if (!wallet) return;
 
         const updated = await Promise.all(
-            this.assets().map(async (asset) => {
+            assetsSnapshot.map(async (asset) => {
                 try {
                     switch (asset.symbol) {
                         case tokensConstants.ETH: {
