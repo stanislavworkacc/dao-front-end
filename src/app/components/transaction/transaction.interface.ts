@@ -4,7 +4,6 @@ interface AssetOption {
     label: string;
     symbol: string;
     type: AssetType;
-    tokenAddress?: string;
     decimals?: number;
     balance?: null | string
 }

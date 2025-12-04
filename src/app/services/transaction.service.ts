@@ -25,7 +25,6 @@ export class TransactionService {
             label: 'SBEL token ',
             symbol: tokensConstants.SBEL,
             type: 'ERC20',
-            tokenAddress: environment.TOKEN_CONTRACT,
             decimals: 6,
             balance: null,
         },
@@ -55,11 +54,11 @@ export class TransactionService {
         if (!wallet) return;
 
         const updated = await Promise.all(
-            assetsSnapshot.map(async (asset) => {
+            assetsSnapshot.map(async (asset: AssetOption) => {
                 try {
                     switch (asset.symbol) {
                         case tokensConstants.ETH: {
-                            const raw = await provider.getBalance(wallet.address);
+                            const raw: bigint = await provider.getBalance(wallet.address);
                             return {
                                 ...asset,
                                 balance: ethers.formatEther(raw),
@@ -67,12 +66,10 @@ export class TransactionService {
                         }
 
                         case tokensConstants.SBEL: {
-                            if (!asset.tokenAddress) return { ...asset, balance: null };
-
                             const erc20 = new ethers.Contract(
-                                asset.tokenAddress,
+                                environment.TOKEN_CONTRACT,
                                 ERC20_ABI,
-                                provider, // 👈 тепер RPC
+                                provider,
                             );
 
                             const raw = await erc20['balanceOf'](wallet.address);
