@@ -3,6 +3,7 @@
 
     <p-dropdown
             [options]="transactionService.assets()"
+            (onChange)="select($event.value)"
             optionLabel="label"
             [style]="{ width: '100%' }">
         <ng-template pTemplate="item" let-option>

@@ -19,7 +19,7 @@ import {FormatHashPipe} from "../../core/pipes/format-hash.pipe";
 import {DropdownChangeEvent, DropdownModule} from "primeng/dropdown";
 import {EthereumService} from "../../core/services/ethereum";
 import {Erh20Service} from "../../core/services/erh-20.service";
-import {TransactionService} from "../../core/services/transaction.service";
+import {WalletService} from "../../core/services/wallet.service";
 
 @Component({
     selector: 'app-transaction',
@@ -45,7 +45,7 @@ import {TransactionService} from "../../core/services/transaction.service";
 export class Transaction {
     private readonly _ethereumService: EthereumService = inject(EthereumService);
     private readonly _erh20Service: Erh20Service = inject(Erh20Service);
-    readonly transactionService: TransactionService = inject(TransactionService);
+    readonly transactionService: WalletService = inject(WalletService);
 
     toAddress = '';
     amount: number | null = null;

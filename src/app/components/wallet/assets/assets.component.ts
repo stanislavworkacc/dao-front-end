@@ -1,7 +1,7 @@
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, output, OutputEmitterRef} from '@angular/core';
 import {DropdownModule} from "primeng/dropdown";
 import {PrimeTemplate} from "primeng/api";
-import {TransactionService} from "../../../core/services/transaction.service";
+import {WalletService} from "../../../core/services/wallet.service";
 
 @Component({
     selector: 'app-assets',
@@ -15,6 +15,12 @@ import {TransactionService} from "../../../core/services/transaction.service";
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AssetsComponent {
-    readonly transactionService: TransactionService = inject(TransactionService);
+    readonly transactionService: WalletService = inject(WalletService);
 
+
+    selectAsset: OutputEmitterRef<AssetOption> = output()
+
+    select(value: AssetOption) {
+        this.selectAsset.emit(value);
+    }
 }

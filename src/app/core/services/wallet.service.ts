@@ -9,7 +9,7 @@ import {ERC20_ABI} from "../../common/blockchain/abi/erc20.abi";
 @Injectable({
     providedIn: 'root',
 })
-export class TransactionService {
+export class WalletService {
     private readonly eth: EthereumService = inject(EthereumService);
     private readonly rpc: RpcProviderService = inject(RpcProviderService);
 

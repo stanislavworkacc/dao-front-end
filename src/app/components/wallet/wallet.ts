@@ -18,6 +18,7 @@ import {EthereumService, WalletInfo} from "../../core/services/ethereum";
 import {NetworkService} from "../../core/services/network.service";
 import {msgStateConstants} from "../../common/constants/msg-state.constants";
 import {AssetsComponent} from "./assets/assets.component";
+import {WalletService} from "../../core/services/wallet.service";
 
 @Component({
     selector: 'app-wallet',
@@ -41,6 +42,7 @@ import {AssetsComponent} from "./assets/assets.component";
 export class Wallet {
     private readonly _ethereumService: EthereumService = inject(EthereumService);
     private readonly _networkService: NetworkService = inject(NetworkService);
+    readonly walletService: WalletService = inject(WalletService);
 
     walletInfo: WritableSignal<WalletInfo | null> = this._ethereumService.walletInfo;
     message: WritableSignal<string> = signal('');
@@ -83,5 +85,9 @@ export class Wallet {
 
     async switchToHoodi() {
         await this._networkService.switchToHoodi();
+    }
+
+    selectAsset(value: AssetOption) {
+        this.walletService.selectedAsset.set(value);
     }
 }
