@@ -81,21 +81,22 @@
                     </div>
 
 
-                    <app-assets (selectAsset)="selectAsset($event)"></app-assets>
+                    @if (!isWrongNetwork) {
+                        <app-assets (selectAsset)="selectAsset($event)"></app-assets>
+                        <div class="info-item">
+                            <label class="info-label">Balance:</label>
+                            <div class="balance-display">
 
-                    <div class="info-item">
-                        <label class="info-label">Balance:</label>
-                        <div class="balance-display">
+                                @if (walletService.selectedAsset()?.balance; as balance) {
+                                    <span class="balance-amount">{{ balance }}</span>
+                                }
 
-                            @if (walletService.selectedAsset()?.balance; as balance) {
-                                <span class="balance-amount">{{ balance }}</span>
-                            }
-
-                            @if (walletService.selectedAsset()?.symbol; as symbol) {
-                                <span class="balance-amount">{{symbol}}</span>
-                            }
+                                @if (walletService.selectedAsset()?.symbol; as symbol) {
+                                    <span class="balance-amount">{{ symbol }}</span>
+                                }
+                            </div>
                         </div>
-                    </div>
+                    }
                 </div>
             </div>
         }

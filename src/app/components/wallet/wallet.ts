@@ -102,6 +102,6 @@ export class Wallet {
             scale: 5,
         });
 
-        return icon.toDataURL(); // повертаємо PNG Base64
+        return icon.toDataURL();
     }
 }
