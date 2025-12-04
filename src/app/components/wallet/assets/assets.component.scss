@@ -1,0 +1,10 @@
+.asset-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.asset-balance small {
+  white-space: nowrap;
+  opacity: 0.8;
+}

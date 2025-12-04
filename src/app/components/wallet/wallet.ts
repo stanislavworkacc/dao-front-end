@@ -17,6 +17,7 @@ import {FormatAddressPipe} from "../../core/pipes/format-address.pipe";
 import {EthereumService, WalletInfo} from "../../core/services/ethereum";
 import {NetworkService} from "../../core/services/network.service";
 import {msgStateConstants} from "../../common/constants/msg-state.constants";
+import {AssetsComponent} from "./assets/assets.component";
 
 @Component({
     selector: 'app-wallet',
@@ -31,6 +32,7 @@ import {msgStateConstants} from "../../common/constants/msg-state.constants";
         ChipModule,
         DividerModule,
         FormatAddressPipe,
+        AssetsComponent,
     ],
     templateUrl: './wallet.html',
     styleUrls: ['./wallet.scss'],

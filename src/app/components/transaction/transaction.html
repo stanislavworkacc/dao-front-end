@@ -17,34 +17,6 @@
                     }
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label">Asset</label>
-
-                    <p-dropdown
-                            [options]="transactionService.assets()"
-                            optionLabel="label"
-                            [style]="{ width: '100%' }">
-                        <ng-template pTemplate="item" let-option>
-                            <div class="asset-option">
-                                <span class="asset-label">{{ option.label }}</span>
-
-                                @if (option.balance) {
-                                    <span class="asset-balance">{{ option.balance }} {{ option.symbol }}</span>
-                                }
-                            </div>
-                        </ng-template>
-
-                        <ng-template pTemplate="selectedItem" let-option>
-                            <div class="asset-option">
-                                <span class="asset-label">{{ option?.label || 'Select asset' }}</span>
-                                @if (option?.balance) {
-                                    <span class="asset-balance">{{ option.balance }} {{ option.symbol }}</span>
-                                }
-                            </div>
-                        </ng-template>
-                    </p-dropdown>
-                </div>
-
                 <!-- Amount -->
                 <div class="form-group">
                     <label class="form-label">
