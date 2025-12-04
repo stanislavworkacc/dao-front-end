@@ -19,6 +19,7 @@ import {NetworkService} from "../../core/services/network.service";
 import {msgStateConstants} from "../../common/constants/msg-state.constants";
 import {AssetsComponent} from "./assets/assets.component";
 import {WalletService} from "../../core/services/wallet.service";
+import {AssetOption} from "../transaction/transaction.interface";
 
 @Component({
     selector: 'app-wallet',

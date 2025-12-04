@@ -2,6 +2,7 @@ import {ChangeDetectionStrategy, Component, inject, output, OutputEmitterRef} fr
 import {DropdownModule} from "primeng/dropdown";
 import {PrimeTemplate} from "primeng/api";
 import {WalletService} from "../../../core/services/wallet.service";
+import {AssetOption} from "../../transaction/transaction.interface";
 
 @Component({
     selector: 'app-assets',

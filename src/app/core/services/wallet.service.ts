@@ -2,9 +2,10 @@ import {effect, inject, Injectable, signal, untracked, WritableSignal} from '@an
 import {ethers, JsonRpcProvider} from "ethers";
 import {EthereumService, WalletInfo} from "./ethereum";
 import {RpcProviderService} from "./rpc-provider.service";
-import {tokensConstants} from "../../common/constants/tokens.constants";
+import {tokensConstants, tokenTypes} from "../../common/constants/tokens.constants";
 import {environment} from "../../../environments/environment";
 import {ERC20_ABI} from "../../common/blockchain/abi/erc20.abi";
+import {AssetOption} from "../../components/transaction/transaction.interface";
 
 @Injectable({
     providedIn: 'root',
@@ -18,13 +19,13 @@ export class WalletService {
             label: 'ETH token ',
             symbol: tokensConstants.ETH,
             decimals: 18,
-            type: 'NATIVE',
+            type: tokenTypes.NATIVE,
             balance: null,
         },
         {
             label: 'SBEL token ',
             symbol: tokensConstants.SBEL,
-            type: 'ERC20',
+            type: tokenTypes.ERC20,
             decimals: 6,
             balance: null,
         },
