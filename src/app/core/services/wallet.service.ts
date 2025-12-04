@@ -34,12 +34,15 @@ export class WalletService {
     selectedAsset: WritableSignal<AssetOption> = signal(this.assets()[0]);
 
     constructor() {
-        effect(() => {
+        effect(async () => {
             const wallet: WalletInfo = this.eth.walletInfo();
 
             if (wallet) {
                 const assetsSnapshot: AssetOption[] = untracked(() => this.assets());
-                this.loadAllBalances(wallet, assetsSnapshot);
+                const updated = await this.loadAllBalances(wallet, assetsSnapshot);
+
+                this.assets.set(updated);
+                this.selectedAsset.set(updated[0]);
                 return;
             } else {
                 this.assets.update((list: AssetOption[]) => list.map((a) => ({ ...a, balance: null })));
@@ -47,12 +50,12 @@ export class WalletService {
         });
     }
 
-    async loadAllBalances(wallet: WalletInfo, assetsSnapshot: AssetOption[]): Promise<void> {
+    async loadAllBalances(wallet: WalletInfo, assetsSnapshot: AssetOption[]): Promise<any> {
         const provider: JsonRpcProvider = this.rpc.getRpcProvider;
 
         if (!wallet) return;
 
-        const updated = await Promise.all(
+        return await Promise.all(
             assetsSnapshot.map(async (asset: AssetOption) => {
                 try {
                     switch (asset.symbol) {
@@ -87,9 +90,6 @@ export class WalletService {
                 }
             }),
         );
-
-        this.assets.set(updated);
-        this.selectedAsset.set(updated[0]);
     }
 
 }

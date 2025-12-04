@@ -1,0 +1,76 @@
+<p-card header="Check address balance" class="p-card-body">
+    <div class="balance-checker">
+        <div class="form-group">
+            <label for="walletAddress" class="form-label">Wallet address</label>
+
+            <span class="p-input-icon-right address-input-wrapper">
+        <i class="pi pi-user"></i>
+        <input
+                id="walletAddress"
+                type="text"
+                pInputText
+                placeholder="0x..."
+                [ngModel]="address()"
+                (ngModelChange)="onAddressChange($event)"
+                [class.input-invalid]="address() && !isAddressValid"
+        />
+      </span>
+
+            <small class="hint">You can check any EVM address (Hoodi-compatible).</small>
+
+
+            @if (error()) {
+                <small class="error-text">{{ error() }}</small>
+            }
+
+            @if (!error() && address() && !isAddressValid) {
+                <small class="error-text">
+                    Address format is not valid
+                </small>
+            }
+        </div>
+
+        <!-- Кнопка -->
+        <div class="actions">
+            <button
+                    pButton
+                    type="button"
+                    label="Check balance"
+                    icon="pi pi-search"
+                    (click)="checkBalances()"
+                    [disabled]="!isAddressValid || loading()"
+                    [loading]="loading()"
+                    class="p-button-success"
+            ></button>
+        </div>
+
+
+        @if (nativeBalance() && sbelBalance()) {
+            <div class="results">
+                <h4>Balances</h4>
+
+                <div class="balance-list">
+                    <div class="balance-row">
+                        <div class="token-info">
+                            <span class="token-name">Native (ETH / HOODI)</span>
+                            <span class="token-symbol">ETH</span>
+                        </div>
+                        <div class="token-balance">
+                            {{ nativeBalance().balance }}
+                        </div>
+                    </div>
+
+                    <div class="balance-row">
+                        <div class="token-info">
+                            <span class="token-name">SBEL token</span>
+                            <span class="token-symbol">SBEL</span>
+                        </div>
+                        <div class="token-balance">
+                            {{ sbelBalance().balance }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</p-card>
