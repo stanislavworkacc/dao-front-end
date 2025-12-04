@@ -18,6 +18,7 @@ import {DividerModule} from 'primeng/divider';
 import {TagModule} from 'primeng/tag';
 import {ethers} from 'ethers';
 import {EthereumService} from "../../core/services/ethereum";
+import {DAO_ABI} from "../../common/blockchain/abi/dao.abi";
 
 @Component({
     selector: 'app-contract',
