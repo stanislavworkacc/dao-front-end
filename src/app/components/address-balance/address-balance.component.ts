@@ -6,6 +6,7 @@ import {InputText} from "primeng/inputtext";
 import {ButtonDirective} from "primeng/button";
 import {WalletService} from "../../core/services/wallet.service";
 import {networkConstantsId, networkConstantsNames} from "../../common/constants/network.constants";
+import {ToastService} from "../../core/services/toast.service";
 
 @Component({
     selector: 'app-address-balance',
@@ -21,6 +22,7 @@ import {networkConstantsId, networkConstantsNames} from "../../common/constants/
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AddressBalanceComponent {
+    private readonly _toastService: ToastService = inject(ToastService);
     private readonly _walletService: WalletService = inject(WalletService);
     address: WritableSignal<string> = signal('');
     nativeBalance: WritableSignal<any> = signal(null);
@@ -70,7 +72,9 @@ export class AddressBalanceComponent {
             this.sbelBalance.set(SBEL);
             this.nativeBalance.set(ETH);
 
+            this._toastService.success('Balances loaded successfully');
         } catch (e: any) {
+            this._toastService.error('Failed to load balances');
             console.error('Failed to load address balances', e);
             this.error.set(e?.message ?? 'Failed to load balances');
         } finally {

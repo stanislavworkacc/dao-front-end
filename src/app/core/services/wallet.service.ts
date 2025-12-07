@@ -6,6 +6,7 @@ import {tokensConstants, tokenTypes} from "../../common/constants/tokens.constan
 import {environment} from "../../../environments/environment";
 import {ERC20_ABI} from "../../common/blockchain/abi/erc20.abi";
 import {AssetOption} from "../../components/transaction/transaction.interface";
+import {ToastService} from "./toast.service";
 
 @Injectable({
     providedIn: 'root',
@@ -13,6 +14,7 @@ import {AssetOption} from "../../components/transaction/transaction.interface";
 export class WalletService {
     private readonly eth: EthereumService = inject(EthereumService);
     private readonly rpc: RpcProviderService = inject(RpcProviderService);
+    private readonly _toastService: ToastService = inject(ToastService);
 
     assets: WritableSignal<AssetOption[]> = signal([
         {
@@ -74,10 +76,15 @@ export class WalletService {
                                 provider,
                             );
 
-                            const raw = await erc20['balanceOf'](wallet.address);
+                            const [rawBalance, decimals, symbol] = await Promise.all([
+                                erc20['balanceOf'](wallet.address),
+                                erc20['decimals'](),
+                                erc20['symbol'](),
+                            ]);
+
                             return {
                                 ...asset,
-                                balance: ethers.formatUnits(raw, asset.decimals),
+                                balance: ethers.formatUnits(rawBalance, decimals),
                             };
                         }
 
@@ -85,6 +92,7 @@ export class WalletService {
                             return { ...asset, balance: null };
                     }
                 } catch (e) {
+                    this._toastService.error('Failed to load balances');
                     console.error('Failed to load', asset.symbol, e);
                     return { ...asset, balance: null };
                 }
