@@ -1,7 +1,8 @@
-import {Injectable, signal, WritableSignal} from '@angular/core';
+import {inject, Injectable, signal, WritableSignal} from '@angular/core';
 import {ethers, Network} from 'ethers';
 import {ethereumMethods} from "../../common/constants/ethereum.constants";
 import {networkConstantsNames} from "../../common/constants/network.constants";
+import {ToastService} from "./toast.service";
 
 export interface WalletInfo {
     address: string;
@@ -14,6 +15,8 @@ export interface WalletInfo {
     providedIn: 'root',
 })
 export class EthereumService {
+    private readonly _toastService: ToastService = inject(ToastService);
+
     private provider: ethers.BrowserProvider | null = null;
     private signer: ethers.JsonRpcSigner | null = null;
 
@@ -94,11 +97,13 @@ export class EthereumService {
                 this.provider = new ethers.BrowserProvider(window.ethereum);
                 this.signer = await this.provider.getSigner();
                 await this.updateWalletInfo();
+
+                this._toastService.info('Chain changed');
             }
         });
 
         window.ethereum.on('accountsChanged', async (accounts: string[]) => {
-            const isWallet: boolean = !!this.walletInfo()
+            const isWallet: boolean = !!this.walletInfo();
 
             if (isWallet) {
                 if (!accounts.length) {
@@ -107,12 +112,24 @@ export class EthereumService {
                     this.provider = new ethers.BrowserProvider(window.ethereum);
                     this.signer = await this.provider.getSigner();
                     await this.updateWalletInfo();
+
+                    this._toastService.info('Account changed');
                 }
             }
+
         });
 
-        window.ethereum.on('disconnect', async (accounts: string[]) => {
-            await this.disconnectWallet();
+        window.ethereum.on('disconnect', async ({code, message}) => {
+            this._toastService.info(message);
+            // await this.disconnectWallet();
+
+            // switch (code) {
+            //     case 1013:
+            //         break;
+            //     default:
+            //         await this.disconnectWallet();
+            //
+            // }
         });
     }
 
@@ -156,7 +173,6 @@ export class EthereumService {
             throw error;
         }
     }
-
 
 
     async getContract(
