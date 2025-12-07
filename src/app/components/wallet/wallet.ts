@@ -27,6 +27,7 @@ import {ethereumMethods} from "../../common/constants/ethereum.constants";
 import {catchError, from, of, switchMap, take, takeUntil, tap} from "rxjs";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {ToastService} from "../../core/services/toast.service";
+import {EnsProfileService} from "../../core/services/ens-profile.service";
 
 
 @Component({
@@ -49,6 +50,7 @@ import {ToastService} from "../../core/services/toast.service";
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Wallet {
+    private readonly _ensProfileService: EnsProfileService = inject(EnsProfileService);
     private readonly _toastService: ToastService = inject(ToastService);
     private readonly _destroyRef: DestroyRef = inject(DestroyRef);
     private readonly dialogService: DialogService = inject(DialogService);
@@ -70,6 +72,9 @@ export class Wallet {
                 method: ethereumMethods.requestAccounts,
             });
 
+            // TODO: PROBLEM WIth _ensProfileService
+            // console.log('_ensProfileService', this._ensProfileService.getProfileForAddress(accounts[0]));
+
             if (!accounts?.length) {
                 this._toastService.info('No accounts found. Please install MetaMask.');
                 this._ethereumService.walletInfo.set(null);
@@ -86,6 +91,7 @@ export class Wallet {
                         this._toastService.info('No account selected. Please select an account.');
                         return of(false);
                     }
+
                     return from(this._ethereumService.connectWallet(account));
                 }),
                 tap((success: boolean) => {
