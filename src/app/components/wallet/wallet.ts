@@ -102,7 +102,7 @@ export class Wallet {
             ).subscribe();
 
         } catch (error) {
-            this.showMessage('Failed to connect wallet: ' + (error as Error).message, 'error');
+            this.showMessage('Failed to connect wallet. Please make sure MetaMask is installed and unlocked.', 'error',);
         }
     }
 
