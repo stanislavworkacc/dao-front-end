@@ -1,0 +1,25 @@
+<div class="wallet-accounts">
+
+    <p class="wallet-subtitle">
+        We detected multiple accounts in your wallet.<br />
+        Select the one you want to use.
+    </p>
+
+    <div class="accounts-list">
+        <button
+                *ngFor="let acc of accounts()"
+                pButton
+                type="button"
+                class="account-btn"
+                (click)="ref.close(acc)"
+        >
+            <div class="acc-left">
+                <div class="acc-avatar"></div>
+                <div class="acc-text">
+                    <span class="acc-short">{{ acc | formatAddress }}</span>
+                    <span class="acc-full">{{ acc }}</span>
+                </div>
+            </div>
+        </button>
+    </div>
+</div>

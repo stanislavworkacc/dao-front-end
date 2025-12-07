@@ -3,7 +3,7 @@ import {
     inject,
     ChangeDetectionStrategy,
     WritableSignal,
-    signal
+    signal, DestroyRef
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
@@ -21,6 +21,12 @@ import {AssetsComponent} from "./assets/assets.component";
 import {WalletService} from "../../core/services/wallet.service";
 import {AssetOption} from "../transaction/transaction.interface";
 import blockies from 'ethereum-blockies';
+import {DialogService, DynamicDialogModule, DynamicDialogRef} from "primeng/dynamicdialog";
+import {WalletAccountsModalComponent} from "./modals/wallet-accounts-modal/wallet-accounts-modal.component";
+import {ethereumMethods} from "../../common/constants/ethereum.constants";
+import {catchError, from, of, switchMap, take, takeUntil, tap} from "rxjs";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {ToastService} from "../../core/services/toast.service";
 
 
 @Component({
@@ -40,9 +46,12 @@ import blockies from 'ethereum-blockies';
     ],
     templateUrl: './wallet.html',
     styleUrls: ['./wallet.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Wallet {
+    private readonly _toastService: ToastService = inject(ToastService);
+    private readonly _destroyRef: DestroyRef = inject(DestroyRef);
+    private readonly dialogService: DialogService = inject(DialogService);
     private readonly _ethereumService: EthereumService = inject(EthereumService);
     private readonly _networkService: NetworkService = inject(NetworkService);
     readonly walletService: WalletService = inject(WalletService);
@@ -57,15 +66,64 @@ export class Wallet {
 
     async connectWallet() {
         try {
-            const success: boolean = await this._ethereumService.connectWallet();
-            if (success) {
-                this.showMessage('Wallet connected successfully!', 'success');
-            } else {
-                this.showMessage('Failed to connect wallet. Please make sure MetaMask is installed and unlocked.', 'error');
+            const accounts = await window.ethereum.request({
+                method: ethereumMethods.requestAccounts,
+            });
+
+            if (!accounts?.length) {
+                this._toastService.info('No accounts found. Please install MetaMask.');
+                this._ethereumService.walletInfo.set(null);
+                return;
             }
+
+            const ref: DynamicDialogRef = this.configureModal(accounts);
+
+            ref.onClose.pipe(
+                take(1),
+                takeUntilDestroyed(this._destroyRef),
+                switchMap((account: string | undefined) => {
+                    if (!account) {
+                        this._toastService.info('No account selected. Please select an account.');
+                        return of(false);
+                    }
+                    return from(this._ethereumService.connectWallet(account));
+                }),
+                tap((success: boolean) => {
+                    if (success) {
+                        this.showMessage('Wallet connected successfully!', 'success');
+                    } else {
+                        this.showMessage('Failed to connect wallet. Please make sure MetaMask is installed and unlocked.', 'error',);
+                    }
+                }),
+                catchError((err) => {
+                    this.showMessage('Failed to connect wallet: ' + (err as Error).message, 'error',);
+                    return of(false);
+                }),
+            ).subscribe();
+
         } catch (error) {
             this.showMessage('Failed to connect wallet: ' + (error as Error).message, 'error');
         }
+    }
+
+    configureModal(accounts: string[]): DynamicDialogRef {
+        const ref: DynamicDialogRef = this.dialogService.open(WalletAccountsModalComponent, {
+            data: {accounts},
+            inputValues: {
+                accounts
+            },
+            focusOnShow: false,
+            closable: true,
+            header: 'Choose an account',
+            width: '50vw',
+            modal: true,
+            breakpoints: {
+                '960px': '75vw',
+                '640px': '90vw'
+            },
+        });
+
+        return ref;
     }
 
     async disconnectWallet() {

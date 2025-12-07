@@ -3,6 +3,10 @@ import {ethers, Network} from 'ethers';
 import {ethereumMethods} from "../../common/constants/ethereum.constants";
 import {networkConstantsNames} from "../../common/constants/network.constants";
 import {ToastService} from "./toast.service";
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import {
+    WalletAccountsModalComponent
+} from "../../components/wallet/modals/wallet-accounts-modal/wallet-accounts-modal.component";
 
 export interface WalletInfo {
     address: string;
@@ -43,23 +47,14 @@ export class EthereumService {
         return this.walletInfo();
     }
 
-    async connectWallet(): Promise<boolean> {
+    async connectWallet(account: string): Promise<boolean> {
         try {
             if (!window.ethereum) {
                 throw new Error('MetaMask is not installed');
             }
 
-            const accounts = await window.ethereum.request({
-                method: ethereumMethods.requestAccounts,
-            });
-
-            if (!accounts || !accounts.length) {
-                this.walletInfo.set(null);
-                return false;
-            }
-
             this.provider = new ethers.BrowserProvider(window.ethereum);
-            this.signer = await this.provider.getSigner();
+            this.signer = await this.provider.getSigner(account);
 
             await this.updateWalletInfo();
             return true;

@@ -1,0 +1,78 @@
+.wallet-accounts {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+.wallet-title {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #111;
+}
+
+.wallet-subtitle {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #555;
+  line-height: 1.4;
+}
+
+.accounts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.account-btn {
+  width: 100%;
+  padding: 0.9rem 1rem !important;
+  background: #f7f9fc !important;
+  border: 1px solid #e4e7ec !important;
+  border-radius: 12px !important;
+
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+
+  transition: 0.2s ease;
+}
+
+.account-btn:hover {
+  background: #eef2f7 !important;
+  border-color: #d6dae0 !important;
+}
+
+.acc-left {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.acc-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #72e3a6, #4dabf7);
+}
+
+.acc-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.acc-short {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #222;
+}
+
+.acc-full {
+  font-size: 0.75rem;
+  color: #6c6c6c;
+  word-break: break-all;
+}
+
+
