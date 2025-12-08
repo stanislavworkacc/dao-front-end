@@ -14,6 +14,7 @@ export class Web3AuthApiService {
     getNonce(address: string): Observable<AuthNonceResponse> {
         return this.http.get<AuthNonceResponse>(`${this.baseUrl}/nonce`, {
             params: {address},
+            withCredentials: true
         });
     }
 
@@ -21,6 +22,8 @@ export class Web3AuthApiService {
         return this.http.post<AuthVerifyResponse>(`${this.baseUrl}/verify`, {
             message,
             signature,
+        }, {
+            withCredentials: true
         });
     }
 }
