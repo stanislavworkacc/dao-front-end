@@ -1,12 +1,9 @@
 import {inject, Injectable, signal, WritableSignal} from '@angular/core';
 import {ethers, Network} from 'ethers';
-import {ethereumMethods} from "../../common/constants/ethereum.constants";
 import {networkConstantsNames} from "../../common/constants/network.constants";
 import {ToastService} from "./toast.service";
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import {
-    WalletAccountsModalComponent
-} from "../../components/wallet/modals/wallet-accounts-modal/wallet-accounts-modal.component";
+import {Web3AuthService} from "./web3-auth.service";
+import {take} from "rxjs";
 
 export interface WalletInfo {
     address: string;
@@ -19,6 +16,7 @@ export interface WalletInfo {
     providedIn: 'root',
 })
 export class EthereumService {
+    private readonly _web3AuthService: Web3AuthService = inject(Web3AuthService);
     private readonly _toastService: ToastService = inject(ToastService);
 
     private provider: ethers.BrowserProvider | null = null;
@@ -55,8 +53,8 @@ export class EthereumService {
 
             this.provider = new ethers.BrowserProvider(window.ethereum);
             this.signer = await this.provider.getSigner(account);
-
             await this.updateWalletInfo();
+            this.authenticate();
             return true;
         } catch (error) {
             console.error('Error connecting wallet:', error);
@@ -103,10 +101,12 @@ export class EthereumService {
             if (isWallet) {
                 if (!accounts.length) {
                     await this.disconnectWallet();
+                    this._web3AuthService.resetAuth();
                 } else {
                     this.provider = new ethers.BrowserProvider(window.ethereum);
                     this.signer = await this.provider.getSigner();
                     await this.updateWalletInfo();
+                    this.authenticate();
 
                     this._toastService.info('Account changed');
                 }
@@ -126,6 +126,13 @@ export class EthereumService {
             //
             // }
         });
+    }
+
+    authenticate() {
+        this._web3AuthService.authenticate$(this.getCurrentWalletInfo, this)
+            .pipe(
+                take(1),
+            ).subscribe();
     }
 
     async updateWalletInfo(): Promise<void> {
