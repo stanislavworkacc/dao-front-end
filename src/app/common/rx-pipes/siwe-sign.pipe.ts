@@ -20,6 +20,9 @@ export function signSiweMessagePipe(
         const domain: string = window.location.host;
         const uri: string = window.location.origin;
 
+        const now = new Date();
+        const expires = new Date(now.getTime() + 10 * 60 * 1000);
+
         const siwe = new SiweMessage({
             domain,
             address: params.address,
@@ -28,6 +31,8 @@ export function signSiweMessagePipe(
             version: '1',
             chainId: params.chainId,
             nonce,
+            issuedAt: now.toISOString(),
+            expirationTime: expires.toISOString(),
         });
 
         const prepared: string = siwe.prepareMessage();
