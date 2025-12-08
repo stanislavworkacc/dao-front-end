@@ -4,6 +4,7 @@ import {networkConstantsNames} from "../../common/constants/network.constants";
 import {ToastService} from "./toast.service";
 import {Web3AuthService} from "./web3-auth.service";
 import {take} from "rxjs";
+import {environment} from "../../../environments/environment";
 
 export interface WalletInfo {
     address: string;
@@ -129,10 +130,12 @@ export class EthereumService {
     }
 
     authenticate() {
-        this._web3AuthService.authenticate$(this.getCurrentWalletInfo, this)
-            .pipe(
-                take(1),
-            ).subscribe();
+        if (environment.useJWT) {
+            this._web3AuthService.authenticate$(this.getCurrentWalletInfo, this)
+                .pipe(
+                    take(1),
+                ).subscribe();
+        }
     }
 
     async updateWalletInfo(): Promise<void> {
