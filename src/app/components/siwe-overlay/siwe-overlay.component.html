@@ -1,0 +1,21 @@
+<p-blockUI [blocked]="auth.loading()">
+    <div class="siwe-overlay">
+        <div class="siwe-card">
+            <h3 class="siwe-title">
+                Wallet authentication
+            </h3>
+
+            <p class="siwe-subtitle">
+                Please confirm the Sign-In with Ethereum request in your wallet.
+            </p>
+
+            <div class="siwe-status-row">
+                <span class="siwe-status-text">{{ auth.statusMessage() }}</span>
+            </div>
+
+            <p class="siwe-hint">
+                Don’t close this window. This step keeps your account secure.
+            </p>
+        </div>
+    </div>
+</p-blockUI>
