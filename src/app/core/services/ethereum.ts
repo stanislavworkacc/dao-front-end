@@ -1,10 +1,12 @@
-import {inject, Injectable, signal, WritableSignal} from '@angular/core';
+import {DestroyRef, inject, Injectable, signal, WritableSignal} from '@angular/core';
 import {ethers, Network} from 'ethers';
 import {networkConstantsNames} from "../../common/constants/network.constants";
 import {ToastService} from "./toast.service";
 import {Web3AuthService} from "./web3-auth.service";
 import {take} from "rxjs";
 import {environment} from "../../../environments/environment";
+import {Web3AuthApiService} from "./web3-auth-api.service";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 export interface WalletInfo {
     address: string;
@@ -17,7 +19,9 @@ export interface WalletInfo {
     providedIn: 'root',
 })
 export class EthereumService {
+    private readonly _destroyRef: DestroyRef = inject(DestroyRef);
     private readonly _web3AuthService: Web3AuthService = inject(Web3AuthService);
+    private readonly _wed3ApiService: Web3AuthApiService = inject(Web3AuthApiService);
     private readonly _toastService: ToastService = inject(ToastService);
 
     private provider: ethers.BrowserProvider | null = null;
@@ -26,6 +30,12 @@ export class EthereumService {
     public walletInfo: WritableSignal<WalletInfo | null> = signal(null)
 
     constructor() {
+        if (!this.signer) {
+            this._wed3ApiService.logout().pipe(
+                takeUntilDestroyed(this._destroyRef),
+                take(1)
+            ).subscribe()
+        }
         // this.checkWalletConnection();
         this.initListeners();
     }

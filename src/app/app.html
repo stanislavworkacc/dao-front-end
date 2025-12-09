@@ -21,6 +21,15 @@
                 ({{ auth.sessionRemainingSeconds() }}s left)
             </p>
         }
+
+        <p-button
+                label="Check session health"
+                icon="pi pi-search"
+                severity="primary"
+                (onClick)="checkSessionHealth()"
+                styleClass="load-btn"
+        >
+        </p-button>
     </header>
 
     <main class="app-main">

@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {Component, DestroyRef, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {Wallet} from './components/wallet/wallet';
 import {Transaction} from './components/transaction/transaction';
@@ -8,16 +8,40 @@ import {AddressBalanceComponent} from "./components/address-balance/address-bala
 import {Toast} from "primeng/toast";
 import {SiweOverlayComponent} from "./components/siwe-overlay/siwe-overlay.component";
 import {Web3AuthService} from "./core/services/web3-auth.service";
+import {Button} from "primeng/button";
+import {Web3AuthApiService} from "./core/services/web3-auth-api.service";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {take} from "rxjs";
+import {ToastService} from "./core/services/toast.service";
 
 @Component({
     selector: 'app-root',
     standalone: true,
-    imports: [CommonModule, Wallet, Transaction, Contract, AddressBalanceComponent, Toast, SiweOverlayComponent],
+    imports: [CommonModule, Wallet, Transaction, Contract, AddressBalanceComponent, Toast, SiweOverlayComponent, Button],
     templateUrl: './app.html',
     styleUrl: './app.scss',
 })
 export class App {
     readonly ethereumService: EthereumService = inject(EthereumService);
+    readonly web3AuthApiService: Web3AuthApiService = inject(Web3AuthApiService);
     readonly auth: Web3AuthService = inject(Web3AuthService);
-    title = 'angularweb3';
+    private readonly _destroyRef: DestroyRef = inject(DestroyRef);
+    private readonly _toasterService: ToastService = inject(ToastService);
+    title: string = 'angularweb3';
+
+    checkSessionHealth() {
+        this.web3AuthApiService.checkHealth().pipe(
+            takeUntilDestroyed(this._destroyRef),
+            take(1)
+        ).subscribe({
+            next: (res) => {
+                this._toasterService.info('Session health check passed');
+                console.log(res);
+            },
+            error: (err) => {
+                this._toasterService.error('Session health check failed');
+                console.error(err);
+            }
+        });
+    }
 }

@@ -32,4 +32,10 @@ export class Web3AuthApiService {
             withCredentials: true
         });
     }
+
+    checkHealth(): Observable<{success: true}> {
+        return this.http.get<{success: true}>(`${this.baseUrl}/health`, {
+            withCredentials: true
+        });
+    }
 }
