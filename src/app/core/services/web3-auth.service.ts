@@ -68,11 +68,15 @@ export class Web3AuthService implements OnDestroy {
                     this.isAuthenticated.set(!!res.success);
                     this.statusMessage.set(toastMessage);
                     this.loading.set(false);
+
+                    this._toasterService.success(toastMessage);
                 },
                 error: (err) => {
                     this.isAuthenticated.set(false);
                     this.statusMessage.set(err?.error?.message || this.MESSAGES.FAILED,);
                     this.loading.set(false);
+                    this._toasterService.error(this.MESSAGES.FAILED);
+                    ethService.disconnectWallet();
                 },
             }),
             map((res: AuthVerifyResponse) => res),
