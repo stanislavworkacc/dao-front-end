@@ -73,6 +73,7 @@ export class EthereumService {
         }
     }
 
+    // ВІДКЛЮЧЕНЯ ГАМАНЦЯ
     async disconnectWallet(): Promise<void> {
         this.provider = null;
         this.signer = null;
@@ -92,6 +93,7 @@ export class EthereumService {
         }
     }
 
+    // РЕАЛІЗОВАНО ПРОСЛУХОВУВАЧІ ПОДІЙ НА ЗМІНУ МЕРЕЖІ АККАУНТА
     private initListeners(): void {
         if (!window.ethereum) return;
 
@@ -126,6 +128,7 @@ export class EthereumService {
 
         });
 
+        // ЦЯ ПОДІЯ В НАТИВНОМУ window.ethereum працює трошки інакше і слухати дісконект не можна тут. бо це спрацьовує навіть при короткочастному відключення від провайдера
         window.ethereum.on('disconnect', async ({code, message}) => {
             this._toastService.info(message);
             // await this.disconnectWallet();

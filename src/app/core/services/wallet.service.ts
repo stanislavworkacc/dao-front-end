@@ -52,6 +52,7 @@ export class WalletService {
         });
     }
 
+    // Функція завантаження балансу токенів
     async loadAllBalances(wallet: WalletInfo, assetsSnapshot: AssetOption[]): Promise<any> {
         const provider: JsonRpcProvider = this.rpc.getRpcProvider;
 
