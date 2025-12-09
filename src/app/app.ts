@@ -7,6 +7,7 @@ import {EthereumService} from "./core/services/ethereum";
 import {AddressBalanceComponent} from "./components/address-balance/address-balance.component";
 import {Toast} from "primeng/toast";
 import {SiweOverlayComponent} from "./components/siwe-overlay/siwe-overlay.component";
+import {Web3AuthService} from "./core/services/web3-auth.service";
 
 @Component({
     selector: 'app-root',
@@ -17,5 +18,6 @@ import {SiweOverlayComponent} from "./components/siwe-overlay/siwe-overlay.compo
 })
 export class App {
     readonly ethereumService: EthereumService = inject(EthereumService);
+    readonly auth: Web3AuthService = inject(Web3AuthService);
     title = 'angularweb3';
 }

@@ -26,4 +26,10 @@ export class Web3AuthApiService {
             withCredentials: true
         });
     }
+
+    logout(): Observable<{success: true}> {
+        return this.http.post<{success: true}>(`${this.baseUrl}/logout`, {}, {
+            withCredentials: true
+        });
+    }
 }

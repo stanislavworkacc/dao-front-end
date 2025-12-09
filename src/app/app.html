@@ -14,6 +14,13 @@
                 </div>
             </div>
         </div>
+        @if (auth.isAuthenticated()) {
+            <p class="session-info">
+                Session ends at:
+                {{ auth.sessionExpiresAt() | date: 'HH:mm:ss' }}
+                ({{ auth.sessionRemainingSeconds() }}s left)
+            </p>
+        }
     </header>
 
     <main class="app-main">

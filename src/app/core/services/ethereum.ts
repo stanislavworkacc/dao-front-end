@@ -67,6 +67,7 @@ export class EthereumService {
         this.provider = null;
         this.signer = null;
         this.walletInfo.set(null);
+        this._web3AuthService.forceLogout('logout');
     }
 
     async checkWalletConnection(): Promise<void> {
