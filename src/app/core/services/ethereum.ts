@@ -83,8 +83,9 @@ export class EthereumService {
     async checkWalletConnection(): Promise<void> {
         if (window.ethereum) {
             try {
+                const account: string = localStorage.getItem('web3-dao-account') || '';
                 this.provider = new ethers.BrowserProvider(window.ethereum);
-                this.signer = await this.provider.getSigner();
+                this.signer = await this.provider.getSigner(account);
                 await this.updateWalletInfo();
             } catch (error) {
                 console.log('No wallet connected');

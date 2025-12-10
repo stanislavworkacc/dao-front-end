@@ -91,7 +91,7 @@ export class Wallet {
                         this._toastService.info('No account selected. Please select an account.');
                         return of(false);
                     }
-
+                    localStorage.setItem('web3-dao-account', account);
                     return from(this._ethereumService.connectWallet(account));
                 }),
                 tap((success: boolean) => {
