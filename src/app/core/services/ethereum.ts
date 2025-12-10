@@ -3,7 +3,7 @@ import {ethers, Network} from 'ethers';
 import {networkConstantsNames} from "../../common/constants/network.constants";
 import {ToastService} from "./toast.service";
 import {Web3AuthService} from "./web3-auth.service";
-import {take} from "rxjs";
+import {catchError, of, take, tap} from "rxjs";
 import {environment} from "../../../environments/environment";
 import {Web3AuthApiService} from "./web3-auth-api.service";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
@@ -30,14 +30,31 @@ export class EthereumService {
     public walletInfo: WritableSignal<WalletInfo | null> = signal(null)
 
     constructor() {
-        if (!this.signer) {
-            this._wed3ApiService.logout().pipe(
-                takeUntilDestroyed(this._destroyRef),
-                take(1)
-            ).subscribe()
-        }
-        this.checkWalletConnection();
+        this.checkSessionHeartbeat();
         this.initListeners();
+    }
+
+    checkSessionHeartbeat(): void {
+        this._wed3ApiService.checkHealth().pipe(
+            takeUntilDestroyed(this._destroyRef),
+            tap((data) => {
+                this._web3AuthService.isAuthenticated.set(true);
+                this._web3AuthService.runSession(data?.expiresAt);
+                this.checkWalletConnection();
+            }),
+            catchError(() => {
+                this.logot()
+                return of(null)
+            }),
+            take(1)
+        ).subscribe();
+    }
+
+    logot() {
+        this._wed3ApiService.logout().pipe(
+            takeUntilDestroyed(this._destroyRef),
+            take(1)
+        ).subscribe()
     }
 
     get isConnected(): boolean {
@@ -84,7 +101,7 @@ export class EthereumService {
     async checkWalletConnection(): Promise<void> {
         const account: string = localStorage.getItem(environment.web3DaoAccount) || '';
 
-        if (window.ethereum && account) {
+        if (window.ethereum && account && this._web3AuthService.isAuthenticated()) {
             try {
                 this.provider = new ethers.BrowserProvider(window.ethereum);
                 this.signer = await this.provider.getSigner(account);

@@ -150,6 +150,6 @@ export class Web3AuthService implements OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.forceLogout();
+        // this.forceLogout();
     }
 }
