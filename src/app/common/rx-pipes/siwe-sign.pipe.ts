@@ -12,6 +12,7 @@ export interface CreateSiweResult {
     signature: string;
 }
 
+// pipe для створення siwe повідомлення та його підпису
 export function signSiweMessagePipe(
     eth: EthereumService,
     params: CreateSiweParams
