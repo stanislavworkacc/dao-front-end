@@ -81,9 +81,10 @@ export class EthereumService {
     }
 
     async checkWalletConnection(): Promise<void> {
-        if (window.ethereum) {
+        const account: string = localStorage.getItem('web3-dao-account') || '';
+
+        if (window.ethereum && account) {
             try {
-                const account: string = localStorage.getItem('web3-dao-account') || '';
                 this.provider = new ethers.BrowserProvider(window.ethereum);
                 this.signer = await this.provider.getSigner(account);
                 await this.updateWalletInfo();
