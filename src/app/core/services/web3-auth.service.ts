@@ -13,6 +13,8 @@ import {ToastService} from "./toast.service";
 import {AuthVerifyResponse} from "../../common/interfaces/web3-auth.interfaces";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
+
+// сервіс для авторизації - автентифікації
 @Injectable({providedIn: 'root'})
 export class Web3AuthService implements OnDestroy {
     private readonly _destroyRef: DestroyRef = inject(DestroyRef);

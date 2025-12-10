@@ -4,6 +4,7 @@ import {Observable} from 'rxjs';
 import {AuthNonceResponse, AuthVerifyResponse} from "../../common/interfaces/web3-auth.interfaces";
 import {url} from "../../../environments/environment";
 
+// апі сервіс для авторизації/автентифікації
 @Injectable({providedIn: 'root'})
 export class Web3AuthApiService {
     private readonly baseUrl = `${url}/api/auth`;
