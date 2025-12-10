@@ -36,7 +36,7 @@ export class EthereumService {
                 take(1)
             ).subscribe()
         }
-        // this.checkWalletConnection();
+        this.checkWalletConnection();
         this.initListeners();
     }
 
