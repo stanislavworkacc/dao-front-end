@@ -74,7 +74,7 @@ export class EthereumService {
     }
 
     async disconnectWallet(): Promise<void> {
-        localStorage.removeItem('web3-dao-account');
+        localStorage.removeItem(environment.web3DaoAccount);
         this.provider = null;
         this.signer = null;
         this.walletInfo.set(null);
@@ -82,7 +82,7 @@ export class EthereumService {
     }
 
     async checkWalletConnection(): Promise<void> {
-        const account: string = localStorage.getItem('web3-dao-account') || '';
+        const account: string = localStorage.getItem(environment.web3DaoAccount) || '';
 
         if (window.ethereum && account) {
             try {

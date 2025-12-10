@@ -28,6 +28,7 @@ import {catchError, from, of, switchMap, take, takeUntil, tap} from "rxjs";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {ToastService} from "../../core/services/toast.service";
 import {EnsProfileService} from "../../core/services/ens-profile.service";
+import {environment} from "../../../environments/environment";
 
 
 @Component({
@@ -91,7 +92,7 @@ export class Wallet {
                         this._toastService.info('No account selected. Please select an account.');
                         return of(false);
                     }
-                    localStorage.setItem('web3-dao-account', account);
+                    localStorage.setItem(environment.web3DaoAccount, account);
                     return from(this._ethereumService.connectWallet(account));
                 }),
                 tap((success: boolean) => {
