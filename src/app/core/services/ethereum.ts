@@ -74,6 +74,7 @@ export class EthereumService {
     }
 
     async disconnectWallet(): Promise<void> {
+        localStorage.removeItem('web3-dao-account');
         this.provider = null;
         this.signer = null;
         this.walletInfo.set(null);
