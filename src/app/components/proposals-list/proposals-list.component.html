@@ -1,11 +1,15 @@
-<p-card header="Proposals">
-    <div class="list">
-        @for (p of dao.proposals(); track p.id) {
-            <app-proposal-card
-                    [proposal]="p"
-                    (voteFor)="vote(p.id, true)"
-                    (voteAgainst)="vote(p.id, false)"
-            />
-        }
-    </div>
-</p-card>
+@if(dao.proposals()?.length) {
+    <p-card header="Proposals">
+        <div class="list">
+            @for (p of dao.proposals(); track p.id) {
+                <app-proposal-card
+                        [proposal]="p"
+                        (voteFor)="vote(p.id, true)"
+                        (voteAgainst)="vote(p.id, false)"
+                />
+            }
+        </div>
+    </p-card>
+} @else {
+    Proposals list is empty or you deleted cached proposals.
+}
