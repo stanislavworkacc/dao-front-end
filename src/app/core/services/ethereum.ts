@@ -138,7 +138,7 @@ export class EthereumService {
                     this.provider = new ethers.BrowserProvider(window.ethereum);
                     this.signer = await this.provider.getSigner();
                     await this.updateWalletInfo();
-                    this.authenticate();
+                    // this.authenticate();
 
                     this._toastService.info('Account changed');
                 }
