@@ -1,0 +1,18 @@
+<p-card>
+    <div class="card">
+        <div class="p-card-title">Create proposal</div>
+        <div class="p-card p-component">
+            <label class="label">Description</label>
+            <textarea pInputTextarea [(ngModel)]="description" rows="3" placeholder="Type proposal description..."></textarea>
+
+            <div class="actions">
+                <p-button
+                        label="Create"
+                        icon="pi pi-plus"
+                        [disabled]="!description.trim()"
+                        (onClick)="create()"
+                ></p-button>
+            </div>
+        </div>
+    </div>
+</p-card>

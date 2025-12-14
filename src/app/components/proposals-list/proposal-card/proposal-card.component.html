@@ -1,0 +1,48 @@
+<p-card class="proposal-card">
+    <div class="card">
+        <div class="top">
+            <div class="title">
+                Proposal #{{ proposal().id }}
+            </div>
+
+            <p-tag
+                    [severity]="tagSeverity()"
+                    [value]="proposal().status"
+                    rounded
+            ></p-tag>
+        </div>
+
+        <div class="desc">
+            {{ proposal().description }}
+        </div>
+
+        <div class="meta">
+            <div>For: <b>{{ proposal().voteCountFor }}</b></div>
+            <div>Against: <b>{{ proposal().voteCountAgainst }}</b></div>
+        </div>
+
+        <div class="actions">
+            <p-button
+                    label="For"
+                    icon="pi pi-thumbs-up"
+                    severity="success"
+                    [disabled]="disableVote()"
+                    (onClick)="voteFor.emit()"
+            />
+
+            <p-button
+                    label="Against"
+                    icon="pi pi-thumbs-down"
+                    severity="danger"
+                    [disabled]="disableVote()"
+                    (onClick)="voteAgainst.emit()"
+            />
+        </div>
+
+        @if (proposal().status === 'error') {
+            <small class="error">
+                {{ proposal().lastError }}
+            </small>
+        }
+    </div>
+</p-card>

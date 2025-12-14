@@ -13,11 +13,13 @@ import {Web3AuthApiService} from "./core/services/web3-auth-api.service";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {take} from "rxjs";
 import {ToastService} from "./core/services/toast.service";
+import {ProposalCreateComponent} from "./components/proposal-create/proposal-create.component";
+import {ProposalsListComponent} from "./components/proposals-list/proposals-list.component";
 
 @Component({
     selector: 'app-root',
     standalone: true,
-    imports: [CommonModule, Wallet, Transaction, Contract, AddressBalanceComponent, Toast, SiweOverlayComponent, Button],
+    imports: [CommonModule, Wallet, Transaction, Contract, AddressBalanceComponent, Toast, SiweOverlayComponent, Button, ProposalCreateComponent, ProposalsListComponent],
     templateUrl: './app.html',
     styleUrl: './app.scss',
 })

@@ -1,0 +1,11 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+}
