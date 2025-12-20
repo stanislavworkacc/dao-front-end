@@ -1,0 +1,64 @@
+:host ::ng-deep .proposal-card {
+  height: 100%;
+  margin: 0.5rem;
+}
+
+.proposal-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  border-radius: 12px;
+}
+
+/* Header */
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* Description */
+.desc {
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: var(--text-color-secondary);
+  word-break: break-word;
+}
+
+/* Meta info */
+.meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  padding-top: 0.25rem;
+  border-top: 1px solid var(--surface-border);
+}
+
+.meta b {
+  font-weight: 600;
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: auto;
+}
+
+.actions ::ng-deep .p-button {
+  flex: 1;
+}
+
+/* Error */
+.error {
+  margin-top: 0.25rem;
+  font-size: 0.8rem;
+  color: var(--red-500);
+}

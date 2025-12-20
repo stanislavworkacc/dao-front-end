@@ -19,6 +19,7 @@ import {TagModule} from 'primeng/tag';
 import {ethers} from 'ethers';
 import {EthereumService} from "../../core/services/ethereum";
 import {DAO_ABI} from "../../common/blockchain/abi/dao.abi";
+import {environment} from "../../../environments/environment";
 
 @Component({
     selector: 'app-contract',
@@ -43,7 +44,7 @@ import {DAO_ABI} from "../../common/blockchain/abi/dao.abi";
 export class Contract {
     private readonly _ethereumService: EthereumService = inject(EthereumService);
 
-    contractAddress = '0x6645CAe3a4D955d83bDC0dCC746a2fbb4d7E71c1';
+    contractAddress: string = environment.DAO_ADDRESS;;
     contractAddressError = '';
     contractInfo: WritableSignal<any | null> = signal(null);
     isLoading = false;
