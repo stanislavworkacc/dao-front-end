@@ -11,4 +11,7 @@ export interface ProposalVM {
     lastTxHash?: string | null;
     lastError?: string | null;
     isVotedByMe?: boolean;     // UI-only guard
+
+    voteCountForRaw: bigint;
+    voteCountAgainstRaw: bigint;
 }

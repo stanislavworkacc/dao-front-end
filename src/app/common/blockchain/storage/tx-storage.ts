@@ -4,7 +4,7 @@ export type StoredTx = {
     hash: string;
     chainId: number;
     contract?: string;
-    tag?: 'createProposal' | 'vote';
+    tag?: 'createProposal' | 'vote' | 'executeProposal';
     proposalId?: number;
     timestamp: number;
 };

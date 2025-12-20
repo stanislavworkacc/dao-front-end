@@ -80,6 +80,9 @@ export class DaoContractService {
     }
 
     private toVM(p: any, isVotedByMe: boolean): ProposalVM {
+        const forRaw: bigint = p.voteCountFor as bigint;
+        const againstRaw: bigint = p.voteCountAgainst as bigint;
+
         return {
             id: Number(p.id),
             description: p.description,
@@ -91,6 +94,8 @@ export class DaoContractService {
             lastTxHash: null,
             lastError: null,
             isVotedByMe,
+            voteCountForRaw: forRaw,
+            voteCountAgainstRaw: againstRaw,
         };
     }
 
@@ -157,6 +162,19 @@ export class DaoContractService {
         if (e?.code === 'ACTION_REJECTED') {
             return 'You rejected the transaction in the wallet.';
         }
+
+        if (String(msg).includes('DAO: voting period is still active')) {
+            return 'Voting is still active. You can execute only after the deadline.';
+        }
+
+        if (String(msg).includes('DAO: proposal did not reach quorum')) {
+            return 'Quorum not reached. Proposal cannot be executed.';
+        }
+
+        if (String(msg).includes('OwnableUnauthorizedAccount') || String(msg).includes('Only owner')) {
+            return 'Only owner can execute proposals.';
+        }
+
         return msg;
     }
 
@@ -242,6 +260,69 @@ export class DaoContractService {
         );
     }
 
+    executeProposal$(proposalId: number): Observable<string | null> {
+        const wallet = this.eth.getCurrentWalletInfo;
+        if (!wallet?.address) {
+            this.toast.error('Wallet not connected');
+            return of(null);
+        }
+
+        const p = this.proposals().find(x => x.id === proposalId);
+        if (!p) return of(null);
+
+        if (p.executed) {
+            this.toast.info('Proposal is already executed.');
+            return of(null);
+        }
+
+        const now = Math.floor(Date.now() / 1000);
+        if (now < p.deadline) {
+            this.toast.info('Voting is still active. Wait until deadline.');
+            return of(null);
+        }
+
+        const total = p.voteCountForRaw + p.voteCountAgainstRaw;
+        const quorum = (total * 50n) / 100n;
+        if (total === 0n || !(p.voteCountForRaw > quorum)) {
+            this.toast.error('Quorum not reached. Cannot execute.');
+            return of(null);
+        }
+
+        return defer(() => from(this.writeContract())).pipe(
+            tap(() => this.toast.info('Sign the execute transaction in your wallet…')),
+            switchMap((c: Contract) =>
+                from(c['executeProposal'](proposalId, false)).pipe(
+                    tap((tx: ethers.TransactionResponse) => {
+                        savePendingTx({
+                            hash: tx.hash,
+                            chainId: wallet.chainId ?? 0,
+                            contract: environment.DAO_ADDRESS,
+                            tag: 'executeProposal',
+                            proposalId,
+                            timestamp: Date.now(),
+                        });
+                        this.markProposalStatus(proposalId, 'pending', tx.hash);
+                        this.toast.info('Execution submitted. Waiting for confirmation…');
+                    }),
+                    switchMap((tx: ethers.TransactionResponse) =>
+                        from(tx.wait()).pipe(map(() => tx.hash)),
+                    ),
+                ),
+            ),
+            tap((hash: string) => {
+                this.toast.success('Proposal executed (tx confirmed)');
+                this.markProposalStatus(proposalId, 'success', hash);
+                if (hash) removePendingTx(hash);
+                this.refreshProposal$(proposalId).subscribe();
+            }),
+            catchError((e) => {
+                this.toast.error(this.humanizeEthersError(e));
+                this.markProposalStatus(proposalId, 'error', null, e?.message);
+                return of(null);
+            }),
+        );
+    }
+
     private refreshProposal$(proposalId: number): Observable<void> {
         const c = this.readContract();
         return defer(() => from(c['getProposal'](proposalId))).pipe(
@@ -281,6 +362,13 @@ export class DaoContractService {
 
         contract.on('Voted', async (id: bigint, voter: string, suport: boolean, amount: bigint) => {
             const proposalId: number = Number(id);
+            this.refreshProposal$(proposalId).subscribe();
+        });
+
+        contract.on('ProposalExecuted', async (id: bigint) => {
+            const proposalId = Number(id);
+
+            this.toast.success(`Proposal #${proposalId} executed`);
             this.refreshProposal$(proposalId).subscribe();
         });
     }

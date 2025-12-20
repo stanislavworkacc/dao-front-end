@@ -6,6 +6,7 @@
                         [proposal]="p"
                         (voteFor)="vote(p.id, true)"
                         (voteAgainst)="vote(p.id, false)"
+                        (execute)="execute(p.id)"
                 />
             }
         </div>

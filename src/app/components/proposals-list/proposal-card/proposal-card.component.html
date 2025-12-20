@@ -1,3 +1,6 @@
+@let exec = getExecuteState();
+
+
 <p-card class="proposal-card">
     <div class="card">
         <div class="top">
@@ -37,12 +40,25 @@
                     [disabled]="disableVote()"
                     (onClick)="voteAgainst.emit()"
             />
+
+
+            @if (canExecute()) {
+                <p-button
+                        label="Execute"
+                        icon="pi pi-bolt"
+                        severity="secondary"
+                        [disabled]="proposal().status === 'pending'"
+                        (onClick)="execute.emit()"
+                ></p-button>
+            }
         </div>
 
-<!--        @if (proposal().status === 'error') {-->
-<!--            <small class="error">-->
-<!--                {{ proposal().lastError }}-->
-<!--            </small>-->
-<!--        }-->
+
+        @if (!exec.canExecute) {
+            <div class="execute-hint">
+                <i class="pi pi-info-circle"></i>
+                <span>{{ exec.reason }}</span>
+            </div>
+        }
     </div>
 </p-card>

@@ -1,7 +1,9 @@
-import {Component, inject} from '@angular/core';
+import {Component, DestroyRef, inject} from '@angular/core';
 import {DaoContractService} from "../../core/services/dao-contract.service";
 import {Card} from "primeng/card";
 import {ProposalCardComponent} from "./proposal-card/proposal-card.component";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {take} from "rxjs";
 
 @Component({
   selector: 'app-proposals-list',
@@ -13,10 +15,17 @@ import {ProposalCardComponent} from "./proposal-card/proposal-card.component";
   styleUrl: './proposals-list.component.scss'
 })
 export class ProposalsListComponent {
+    private readonly _destroyRef: DestroyRef = inject(DestroyRef);
     readonly dao = inject(DaoContractService);
 
     vote(id: number, support: boolean) {
         this.dao.vote$(id, support).subscribe();
     }
 
+    protected execute(id: number) {
+        this.dao.executeProposal$(id).pipe(
+            takeUntilDestroyed(this._destroyRef),
+            take(1)
+        ).subscribe();
+    }
 }
