@@ -1,0 +1,44 @@
+<div class="topbar">
+    <a class="back" [routerLink]="['/']">
+        <i class="pi pi-arrow-left"></i>
+        Back to main
+    </a>
+</div>
+
+<p-card header="DAO Proposals" styleClass="proposals-card">
+    @switch (state()?.kind) {
+        @case ('loading') {
+            <div class="center">
+                <p-progressSpinner></p-progressSpinner>
+                <div class="muted">Loading proposals…</div>
+            </div>
+        }
+
+        @case ('error') {
+            <p-message severity="error" [text]="state().error"></p-message>
+        }
+
+        @case ('ready') {
+            @if (!state().data.length) {
+                <p-message severity="info" text="No proposals yet."></p-message>
+            } @else {
+                <div class="grid">
+                    @for (p of state().data; track p.id) {
+                        <a class="proposal-row" [routerLink]="['/proposals', p.id]">
+                            <div class="left">
+                                <div class="id">#{{ p.id }}</div>
+                                <div class="desc">{{ p.description }}</div>
+                                <div class="creator">{{ p.creator }}</div>
+                            </div>
+
+                            <div class="right">
+                                <p-tag [severity]="severity(p)" [value]="label(p)"></p-tag>
+                                <i class="pi pi-angle-right"></i>
+                            </div>
+                        </a>
+                    }
+                </div>
+            }
+        }
+    }
+</p-card>

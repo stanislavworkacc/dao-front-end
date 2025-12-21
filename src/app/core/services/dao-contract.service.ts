@@ -190,7 +190,6 @@ export class DaoContractService {
             this.toast.info('You have already voted (local check).');
             return of(null);
         }
-
         return defer(() => from(this.writeContract())).pipe(
             tap(() => this.toast.info('Sign the vote transaction in your wallet…')),
             switchMap((c) =>
