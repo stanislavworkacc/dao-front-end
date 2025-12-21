@@ -1,0 +1,205 @@
+<div class="page">
+    <div class="topbar">
+        <a class="back" [routerLink]="['/proposals']">
+            <i class="pi pi-arrow-left"></i>
+            Back to proposals
+        </a>
+    </div>
+
+    <p-card styleClass="card">
+        @if (proposalState()?.status === 'loading') {
+            <div class="skeleton">
+                <p-skeleton height="1.6rem" width="40%"></p-skeleton>
+                <p-skeleton height="1.1rem" width="90%"></p-skeleton>
+                <p-skeleton height="1.1rem" width="75%"></p-skeleton>
+                <p-skeleton height="12rem" width="100%"></p-skeleton>
+            </div>
+        } @else if (proposalState().status === 'error') {
+            <p-message severity="error" [text]="proposalState().error"></p-message>
+        } @else if (proposalState().status === 'empty' || !proposalState().proposal) {
+            <p-message severity="warn" text="Proposal not found."></p-message>
+        } @else {
+            @let p = proposalState().proposal;
+
+            <div class="header">
+                <div class="h-left">
+                    <div class="title">Proposal #{{ p.id }}</div>
+                    <div class="subtitle">Created at: {{ p.createdAt | date:'medium' }}</div>
+                </div>
+
+                <div class="h-right">
+                    <p-tag [severity]="statusSeverity()" [value]="statusLabel()"></p-tag>
+                </div>
+            </div>
+
+            <p-divider></p-divider>
+
+            <div class="grid">
+                <div class="info">
+                    <div class="row">
+                        <div class="k">Description</div>
+                        <div class="v">{{ p.description }}</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="k">Creator</div>
+                        <div class="v mono" pTooltip="{{ p.creator }}">
+                            {{ formatAddress(p.creator) }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="k">Tx</div>
+                        <div class="v mono">
+                            <button
+                                    pButton
+                                    type="button"
+                                    class="p-button-text p-button-sm"
+                                    icon="pi pi-external-link"
+                                    label="{{ formatHash(p.transactionHash) }}"
+                                    (click)="openTx(p.transactionHash)"
+                            ></button>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="k">Start block</div>
+                        <div class="v mono">{{ p.startBlock }}</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="k">End block</div>
+                        <div class="v mono">{{ p.endBlock ?? '-' }}</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="k">Executed</div>
+                        <div class="v">
+                            <p-tag
+                                    [severity]="p.executed ? 'success' : 'info'"
+                                    [value]="p.executed ? 'yes' : 'no'"
+                            ></p-tag>
+                            @if (p.executedAt) {
+                                <span class="muted"> · {{ p.executedAt | date:'medium' }}</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart">
+                    <div class="chart-title">Voting results</div>
+
+                    <div class="chart-wrap">
+                        <p-chart type="doughnut" [data]="pieData()" [options]="pieOptions()"></p-chart>
+                    </div>
+
+                    <div class="numbers">
+                        <div class="num">
+                            <span class="lbl">For </span>
+                            <span class="val mono">{{ p.voteCountFor }}</span>
+
+                            @if (forPct()) {
+                                <span class="pct">{{ forPct() }} %</span>
+                            }
+                        </div>
+
+                        <div class="num">
+                            <span class="lbl">Against </span>
+                            <span class="val mono">{{ p.voteCountAgainst }}</span> /
+                            <span class="pct">{{ againstPct() }} %</span>
+                        </div>
+                    </div>
+
+                    <div class="bar-wrap">
+                        <p-chart type="bar" [data]="barData()" [options]="barOptions()"></p-chart>
+                    </div>
+                </div>
+            </div>
+
+            <div class="actions">
+                <p-button
+                        label="For"
+                        icon="pi pi-thumbs-up"
+                        severity="success"
+                        [disabled]="disableVote()"
+                        (onClick)="vote(proposalState().proposal.id, true)"
+                />
+
+                <p-button
+                        label="Against"
+                        icon="pi pi-thumbs-down"
+                        severity="danger"
+                        [disabled]="disableVote()"
+                        (onClick)="vote(proposalState().proposal.id, false)"
+                />
+
+
+                <p-button
+                        label="Execute"
+                        icon="pi pi-bolt"
+                        severity="secondary"
+                        [disabled]="proposalState().proposal.status === 'pending'"
+                        (onClick)="execute(proposalState().proposal.id)"
+                ></p-button>
+            </div>
+
+            <p-divider></p-divider>
+
+            <div class="votes">
+                <div class="votes-title">Votes</div>
+
+                @if (resultsState().status === 'loading') {
+                    <p-skeleton height="8rem" width="100%"></p-skeleton>
+                } @else if (resultsState().status === 'error') {
+                    <p-message severity="error" [text]="resultsState().error"></p-message>
+                } @else if (!resultsState().votes?.length) {
+                    <p-message severity="info" text="No votes yet."></p-message>
+                } @else {
+                    <p-table
+                            [value]="resultsState().votes"
+                            [paginator]="true"
+                            [rows]="8"
+                            [rowsPerPageOptions]="[8, 15, 30]"
+                            styleClass="votes-table"
+                    >
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th>Voter</th>
+                                <th>Support</th>
+                                <th>Amount</th>
+                                <th>Block</th>
+                                <th>Tx</th>
+                                <th>Time</th>
+                            </tr>
+                        </ng-template>
+
+                        <ng-template pTemplate="body" let-v>
+                            <tr>
+                                <td class="mono" pTooltip="{{ v.voter }}">{{ formatAddress(v.voter) }}</td>
+                                <td>
+                                    <p-tag
+                                            [severity]="v.support ? 'success' : 'danger'"
+                                            [value]="v.support ? 'for' : 'against'"
+                                    ></p-tag>
+                                </td>
+                                <td class="mono">{{ v.amount }}</td>
+                                <td class="mono">{{ v.blockNumber }}</td>
+                                <td class="mono">
+                                    <button
+                                            pButton
+                                            type="button"
+                                            class="p-button-text p-button-sm"
+                                            icon="pi pi-external-link"
+                                            label="{{ formatHash(v.transactionHash) }}"
+                                            (click)="openTx(v.transactionHash)"
+                                    ></button>
+                                </td>
+                                <td>{{ v.timestamp | date:'short' }}</td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                }
+            </div>
+        }
+    </p-card>
+</div>

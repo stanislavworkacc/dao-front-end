@@ -1,0 +1,75 @@
+.proposals-card {
+  max-width: 980px;
+  margin: 0 auto;
+  background-color: white !important;
+}
+
+::ng-deep .p-card {
+  background-color: white !important;
+}
+
+.center {
+  display: grid;
+  justify-items: center;
+  gap: .75rem;
+  padding: 2rem 1rem;
+}
+
+.muted {
+  opacity: .7;
+  font-size: .9rem;
+}
+
+.grid {
+  display: grid;
+  gap: .75rem;
+}
+
+.proposal-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 14px;
+  text-decoration: none;
+  color: inherit;
+  border: 1px solid rgba(0, 0, 0, .08);
+  transition: transform .12s ease, box-shadow .12s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, .08);
+  }
+}
+
+.left {
+  display: grid;
+  gap: .25rem;
+  min-width: 0;
+}
+
+.id {
+  font-weight: 700;
+}
+
+.desc {
+  font-size: .95rem;
+  opacity: .9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.creator {
+  font-size: .8rem;
+  opacity: .65;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.right {
+  display: inline-flex;
+  align-items: center;
+  gap: .75rem;
+}

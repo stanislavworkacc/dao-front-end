@@ -1,0 +1,86 @@
+<div class="app-container">
+    <header class="app-header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <i class="pi pi-shield"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>Angular Web3 DApp</h1>
+                    <p>Ethereum blockchain integration with Angular and ethers.js</p>
+                </div>
+            </div>
+        </div>
+
+        @if (auth.isAuthenticated()) {
+            <p class="session-info">
+                Session ends at:
+                {{ auth.sessionExpiresAt() | date: 'HH:mm:ss' }}
+                ({{ auth.sessionRemainingSeconds() }}s left)
+            </p>
+        }
+
+        <p-button
+                label="Check session health"
+                icon="pi pi-search"
+                severity="primary"
+                (onClick)="checkSessionHealth()"
+                styleClass="load-btn"
+        >
+        </p-button>
+    </header>
+
+    <main class="app-main">
+        <div class="content-wrapper">
+            <div class="components-grid">
+                <div class="component-card wallet-card">
+                    <app-wallet></app-wallet>
+                </div>
+
+
+                @if (ethereumService.walletInfo()) {
+                    <div class="component-card transaction-card">
+                        <app-transaction></app-transaction>
+                    </div>
+
+                    <!--                    <div class="component-card contract-card full-width">-->
+                            <!--                        <app-contract></app-contract>-->
+                            <!--                    </div>-->
+
+
+                    <div class="component-card contract-card full-width">
+                        <app-proposal-create></app-proposal-create>
+                    </div>
+
+                    <div class="component-card contract-card full-width">
+                        <app-proposals-list></app-proposals-list>
+                    </div>
+
+                    <p-button
+                            label="Open all proposals list"
+                            icon="pi pi-search"
+                            severity="primary"
+                            styleClass="load-btn"
+                            [routerLink]="['/proposals']"
+                    >
+                        <a class="back"><i class="pi pi-arrow-left"></i>
+                        </a>
+                    </p-button>
+                }
+
+                <div class="component-card contract-card full-width">
+                    <app-address-balance></app-address-balance>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="app-footer">
+        <div class="footer-content">
+            <p>Built with Angular, PrimeNG and ethers.js</p>
+            <div class="footer-links">
+                <span>Web3 • Blockchain • Angular</span>
+            </div>
+        </div>
+    </footer>
+</div>
